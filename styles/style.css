@@ -1,0 +1,41 @@
+/* Example Style Sheet */
+
+/* This keeps the visited links blue (overriding the browser's default) */
+a:visited { color: blue; }
+
+h3, .oddrow {background-color: #D6FFD6;}
+
+#orderbutton { background-color: yellow; } 
+
+
+/* Table styles */
+/* Set and collapses the borders */
+table, td, tr, th { 
+	border: solid 1px black;
+	border-collapse: collapse;
+	margin: auto;
+}
+
+td, th {
+	width: 100px;
+	text-align: center;
+}
+
+th { background-color: #A3FF75}
+
+
+/* Set the margins */
+
+.content, .heading {
+	max-width: 600px;
+	margin: 5px 20px 5px 20px;
+	padding: 5px 20px 5px 20px;
+	}
+	
+
+#orderform {
+	border: dotted 1px;
+	margin: 20px;
+	padding: 10px;
+	}
+	
