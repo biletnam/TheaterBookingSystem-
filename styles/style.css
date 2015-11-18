@@ -11,7 +11,7 @@ h1, h2, h3 {
     margin: 0;
     padding: 0;
     font-weight: normal;
-    color: #221D1D;
+    color: #6600FF;
 }
 
 h1 {
@@ -63,7 +63,7 @@ h1 {
     border: none;
     background: none;
     text-decoration: none;
-    color: #A83A01;
+    color: #6600FF;
 }
 
 #footer {
@@ -72,4 +72,48 @@ h1 {
 
 #footer p {
 	font-size: 0.8em;
+}
+
+#menu {
+    width: 940px;
+    height: 36px;
+    margin: 0 auto;
+    padding: 0;
+    background: #6699FF;
+}
+
+#menu ul {
+    margin: 0px 0px 0px 10px;
+    padding: 0;
+    list-style: none;
+    line-height: normal;
+}
+
+#menu li {
+    float: left;
+}
+
+#menu a {
+    display: block;
+    height: 26px;
+    margin-bottom: 10px;
+    padding: 10px 20px 0px 20px;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    color: #FFFFFF;
+    border: none;
+}
+
+#menu a:hover, #menu .current_page_item a {
+    background: #9966FF;
+    text-decoration: none;
+}
+
+#menu .current_page_item a {
+    background: #6666FF;
+    color: #FFFFFF;
 }
