@@ -59,6 +59,7 @@ $create_tables[4] = "CREATE TABLE Booking(
  foreign key (date_time) references Performance(date_time)
 );";
 
+//create the tables
 foreach ($create_tables as $table)
 	if ($conn->query($table) === TRUE) {
 		echo "created successfully! $table \n\n";} 
@@ -67,27 +68,23 @@ foreach ($create_tables as $table)
 	    echo $conn->connect_error;
 	}
 
-$zone_inserts = file('database/zone.sql');
-foreach ($zone_inserts as $line_num => $insert) {
-	if ($conn->query($insert)) {
-		echo "added in $insert";
-	}
-	else {
-		echo "could not add in $insert";
-		echo $conn->connect_error;
+function file_insert($file_name) {
+	$file = file($file_name);
+	foreach ($file as $line_num => $insert) {
+		if ($conn->query($insert)) {
+			echo "added in $insert";
+		}
+		else {
+			echo "could not add in $insert";
+			echo $conn->connect_error;
+		}
 	}
 }
 
-$seat_inserts = file('database/seat.sql');
-foreach ($seat_inserts as $line_num => $insert) {
-	if ($conn->query($insert) === TRUE) {
-		echo "added in $insert";
-	}
-	else {
-		echo "could not add in $insert";
-		echo $conn->connect_error;
-	}
-}
+//insert the zones
+file_insert('database/zone.sql');
+file_insert('database/seat.sql');
+
 
 
 
