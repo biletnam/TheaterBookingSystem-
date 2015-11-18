@@ -30,7 +30,14 @@ include($page.'_settings.php');
 			<?php include('main_menu.php'); ?>
 		</div>
 
-		<?php include($page_content); ?>
+		<div id="content">
+			<?php include($page_content); ?>
+		</div>
+
+		<div id="footer">
+			<p>Created by Caspar Nonclercq, cn249@kent.ac.uk</p>
+			<p>Copyright 2015</p>
+		</div>
 
 	</body>
 </html> 
