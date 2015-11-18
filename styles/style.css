@@ -117,3 +117,14 @@ h1 {
     background: #6666FF;
     color: #FFFFFF;
 }
+
+.post {
+	margin: 20px;
+	padding: 5px;
+	border-top: 2px solid #6600CC;
+	border-left: 2px solid #6600CC;
+}
+
+.highlighted {
+	background-color: #f2e5ff;
+}

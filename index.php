@@ -18,6 +18,10 @@ if (isset($_GET['page'])) { //if set
 //when in production, this should revert to $page = 'home'
 //if there is an error
 include($page.'_settings.php'); //get the page settings
+//it knows what further information to get from the _GET and 
+//the _POST variables, parses them and sets the variables the 
+//the page-content will use.
+//it also sets the page specific variables such as the description etc.
 ?>
 
 <!DOCTYPE html>
