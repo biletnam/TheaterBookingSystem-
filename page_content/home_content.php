@@ -5,4 +5,15 @@
 <p>Below is a list of our newest productions. Check back soon for more!</p>
 </div>
 
+<?php
+
+$zones = "SELECT * from Zone;";
+
+$results = $conn->query($zones);
+foreach ($results as $row) {
+	echo $row["name"]." ".$row["price_multiplier"]."<br>";
+}
+
+?>
+
 <!-- Here will go a list of the newest productions Taken from the database-->

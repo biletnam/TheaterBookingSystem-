@@ -17,13 +17,20 @@ if (isset($_GET['page'])) { //if set
 
 //when in production, this should revert to $page = 'home'
 //if there is an error
-include($page.'_settings.php'); //get the page settings
+$page_settings = 'page_settings/'.$page.'_settings.php';
+if (file_exists($page_settings)) {
+	include('page_settings/'.$page.'_settings.php'); //get the page settings
 //it knows what further information to get from the _GET and 
 //the _POST variables, parses them and sets the variables the 
 //the page-content will use.
 //it also sets the page specific variables such as the description etc.
 
 //it also connects to the database if required.
+}
+else {
+	include('page_settings/home_settings.php');
+	$error = "The requested page does not exist";
+}
 
 include('connect_to_database.php'); //connection closed at the end of this file
 ?>
@@ -72,8 +79,10 @@ include('connect_to_database.php'); //connection closed at the end of this file
 
 			<div id="content">
 
-
-				<?php include($page_content); ?>
+				<?php 
+					if (isset($error)) echo $error;
+					include('page_content/'.$page_content);
+				?>
 			</div>
 
 			<div style="clear: both;"></div>
