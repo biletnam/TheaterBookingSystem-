@@ -8,10 +8,19 @@
 <?php
 
 $zones = "SELECT * from Zone;";
-
 $results = $conn->query($zones);
 foreach ($results as $row) {
 	echo $row["name"]." ".$row["price_multiplier"]."<br>";
+}
+$productions = "SELECT * from Production;";
+$results = $conn->query($productions);
+foreach ($results as $row) {
+	echo $row["title"]."<br>";
+}
+$shows = "SELECT * from Performance";
+$results = $conn->query($shows);
+foreach ($results as $row) {
+	echo $row["date_time"]."<br>";
 }
 
 ?>

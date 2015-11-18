@@ -62,27 +62,30 @@ $create_tables[4] = "CREATE TABLE Booking(
 //create the tables
 foreach ($create_tables as $table)
 	if ($conn->query($table) === TRUE) {
-		echo "created successfully! $table \n\n";} 
+		//echo "created successfully! $table \n\n";
+	} 
 	else {
-	    echo "could not perform $table\n\n";
-	    echo $conn->connect_error;
+	    echo "<br>could not perform <br> $table<br>";
+	    echo $conn->error;
 	}
 
-function file_insert_into_database($file_name) {
+function file_insert_into_database($file_name, $conn) {
 	$file = file($file_name);
 	foreach ($file as $line_num => $insert) {
 		if ($conn->query($insert)) {
-			echo "added in $insert";
+			//echo "added in $insert";
 		}
 		else {
-			echo "could not add in $insert";
-			echo $conn->connect_error;
+			echo "<br>could not add in <br> $insert <br>";
+			echo $conn->error;
 		}
 	}
 }
 
-file_insert_into_database('database/zone.sql');
-file_insert_into_database('database/seat.sql');
+file_insert_into_database('database/zone.sql', $conn);
+file_insert_into_database('database/seat.sql', $conn);
+file_insert_into_database('database/productions.sql', $conn);
+file_insert_into_database('database/performances.sql', $conn);
 
 
 

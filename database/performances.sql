@@ -1,0 +1,1 @@
+insert into Performance values ("2016-01-12 19:30:00", 'The Wizard of Oz');
