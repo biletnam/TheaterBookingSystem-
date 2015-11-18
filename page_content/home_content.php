@@ -13,7 +13,7 @@ function display_performance($performance){
 	$mins = $performance['mins'];
 	$genre = $performance['genre'];
 	echo "<div class=\"post\">
-		<h2>$title</h2>
+		<h2><a href=\"?page=productions&production=$title\">$title</a></h2>
 		<p>$description</p>
 		<ul class=\"performance-details\">
 			<li>Runtime: $mins minutes</li>
