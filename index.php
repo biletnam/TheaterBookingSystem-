@@ -1,8 +1,8 @@
 <?php
 
-$valid_pages = array( //Also used for menu
+$valid_pages = array( //Also used for the menu
 	'home' => 'Home',
-	'production' => 'Current Productions',
+	'productions' => 'Current Productions',
 	'shows' => 'Upcoming Shows',
 	'book' => 'Book Seats',
 	'location' => 'Location',
@@ -22,6 +22,10 @@ include($page.'_settings.php'); //get the page settings
 //the _POST variables, parses them and sets the variables the 
 //the page-content will use.
 //it also sets the page specific variables such as the description etc.
+
+//it also connects to the database if required.
+
+include('connect_to_database.php'); //connection closed at the end of this file
 ?>
 
 <!DOCTYPE html>
@@ -67,6 +71,8 @@ include($page.'_settings.php'); //get the page settings
 			<div style="clear: both;"></div>
 
 			<div id="content">
+
+
 				<?php include($page_content); ?>
 			</div>
 
@@ -80,3 +86,5 @@ include($page.'_settings.php'); //get the page settings
 
 	</body>
 </html> 
+
+<?php if (isset($conn)) {$conn->close();} ?>
