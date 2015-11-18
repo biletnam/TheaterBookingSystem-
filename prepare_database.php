@@ -87,7 +87,4 @@ file_insert_into_database('database/seat.sql', $conn);
 file_insert_into_database('database/productions.sql', $conn);
 file_insert_into_database('database/performances.sql', $conn);
 
-
-
-
 ?>
