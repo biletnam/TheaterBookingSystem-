@@ -11,8 +11,11 @@ $newest_performances_sql = "
 SELECT DISTINCT pr.* 
 FROM Production pr
   JOIN Performance pe on pe.title = pr.title
-ORDER BY pe.date_time DESC;
+ORDER BY pe.date_time DESC
+LIMIT 10;
 ";
 $newest_performances = $conn->query($newest_performances_sql)
+
+
 
 ?>

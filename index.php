@@ -1,5 +1,6 @@
 <?php
 
+include('connect_to_database.php'); //connection closed at the end of this file
 $valid_pages = array( //Also used for the menu
 	'home' => 'Home',
 	'productions' => 'Current Productions',
@@ -32,7 +33,7 @@ else {
 	$error = "The requested page does not exist";
 }
 
-include('connect_to_database.php'); //connection closed at the end of this file
+
 ?>
 
 <!DOCTYPE html>
