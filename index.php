@@ -8,6 +8,8 @@ if (isset($_GET['page']) &&
 	$page = $_GET['page'];
 }
 
+//when in production, this should revert to $page = 'home'
+//if there is an error
 include($page.'_settings.php'); //get the page settings
 ?>
 
