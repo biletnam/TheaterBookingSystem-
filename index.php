@@ -60,9 +60,13 @@ include($page.'_settings.php'); //get the page settings
 				</ul>
 			</div>
 
+			<div style="clear: both;"></div>
+
 			<div id="content">
 				<?php include($page_content); ?>
 			</div>
+
+			<div style="clear: both;"></div>
 
 			<div id="footer">
 				<p>Created by Caspar Nonclercq, cn249@kent.ac.uk</p>
