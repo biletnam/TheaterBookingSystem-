@@ -21,22 +21,24 @@ include($page.'_settings.php');
 		<meta name="author" content="Caspar Nonclercq">
 	</head>
 	<body>
-		<div id="header">
-			<h1><a href="/">Caspar's Theatre</a></h1>
-			<p>The beginning of something beautiful...</p>
-		</div>
+		<div id="wrapper">
+			<div id="header">
+				<h1><a href="/">Caspar's Theatre</a></h1>
+				<p>The beginning of something beautiful...</p>
+			</div>
 
-		<div id="menu">
-			<?php include('main_menu.php'); ?>
-		</div>
+			<div id="menu">
+				<?php include('main_menu.php'); ?>
+			</div>
 
-		<div id="content">
-			<?php include($page_content); ?>
-		</div>
+			<div id="content">
+				<?php include($page_content); ?>
+			</div>
 
-		<div id="footer">
-			<p>Created by Caspar Nonclercq, cn249@kent.ac.uk</p>
-			<p>Copyright 2015</p>
+			<div id="footer">
+				<p>Created by Caspar Nonclercq, cn249@kent.ac.uk</p>
+				<p>Copyright 2015</p>
+			</div>
 		</div>
 
 	</body>
