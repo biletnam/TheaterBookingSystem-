@@ -1,9 +1,7 @@
 <?php
 
+$page = 'home';
 if (isset($_GET['page'])) {
-	$page = 'home';
-}
-else {
 	$page = 'home';
 }
 
@@ -23,6 +21,14 @@ include($page.'_settings.php');
 		<meta name="author" content="Caspar Nonclercq">
 	</head>
 	<body>
+		<div id="header">
+			<h1><a href="/">Caspar's Theatre</a></h1>
+			<p>The beginning of something beautiful...</p>
+		</div>
+
+		<div id="menu">
+			<?php include('main_menu.php'); ?>
+		</div>
 
 		<?php include($page_content); ?>
 
