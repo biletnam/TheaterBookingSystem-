@@ -68,7 +68,7 @@ foreach ($create_tables as $table)
 	    echo $conn->connect_error;
 	}
 
-function file_insert($file_name) {
+function file_insert_into_database($file_name) {
 	$file = file($file_name);
 	foreach ($file as $line_num => $insert) {
 		if ($conn->query($insert)) {
@@ -81,9 +81,8 @@ function file_insert($file_name) {
 	}
 }
 
-//insert the zones
-file_insert('database/zone.sql');
-file_insert('database/seat.sql');
+file_insert_into_database('database/zone.sql');
+file_insert_into_database('database/seat.sql');
 
 
 
