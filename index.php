@@ -1,15 +1,15 @@
 <?php
 
-$page = 'home';
-if (isset($_GET['page'])) {
-	$page = 'home';
+$page = 'home'; //set default
+$valid_pages = array('home', 'shows');
+
+if (isset($_GET['page']) && 
+	in_array($_GET['page'], $valid_pages)) {
+	$page = $_GET['page'];
 }
 
-include($page.'_settings.php');
-
-
+include($page.'_settings.php'); //get the page settings
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -26,6 +26,7 @@ include($page.'_settings.php');
 				<h1><a href="/">Caspar's Theatre</a></h1>
 				<p>The beginning of something beautiful...</p>
 			</div>
+			<div style="clear: both;"></div>
 
 			<div id="menu">
 				<?php include('main_menu.php'); ?>
