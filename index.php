@@ -30,7 +30,7 @@ if (file_exists($page_settings)) {
 }
 else {
 	include('page_settings/home_settings.php');
-	$error = "The requested page does not exist";
+	$error = "The requested page does not exist, you are viewing the home page";
 }
 
 
