@@ -1,11 +1,18 @@
 <?php
 
-$page = 'home'; //set default
-$valid_pages = array('home', 'shows');
+$valid_pages = array( //Also used for menu
+	'home' => 'Home',
+	'production' => 'Current Productions',
+	'shows' => 'Upcoming Shows',
+	'book' => 'Book Seats',
+	'location' => 'Location',
+	);
 
-if (isset($_GET['page']) && 
-	in_array($_GET['page'], $valid_pages)) {
-	$page = $_GET['page'];
+$page = 'home';
+if (isset($_GET['page'])) {
+	if (array_key_exists($_GET['page'], $valid_pages)) {
+		$page = $_GET['page'];
+	}
 }
 
 //when in production, this should revert to $page = 'home'
@@ -31,7 +38,26 @@ include($page.'_settings.php'); //get the page settings
 			<div style="clear: both;"></div>
 
 			<div id="menu">
-				<?php include('main_menu.php'); ?>
+				<ul class="main-menu">
+					<?php
+
+					function make_menu_item($menu_link, $menu_link_name) {
+						global $page;
+						if ($menu_link == $page) {
+							$current_page_item = " class=\"current_page_item\"";
+						}
+						else {
+							$current_page_item = '';
+						}
+						echo "<li$current_page_item><a href=\"/?page=$menu_link\">$menu_link_name</a></li>\n";
+					}
+
+					foreach ($valid_pages as $menu_link => $menu_link_name){
+						make_menu_item($menu_link, $menu_link_name);
+					}
+
+					?>
+				</ul>
 			</div>
 
 			<div id="content">
