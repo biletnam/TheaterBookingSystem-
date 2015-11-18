@@ -5,4 +5,4 @@
 <p>Below is a list of our newest productions. Check back soon for more!</p>
 </div>
 
-<!-- Here will go a list of the newest productions -->
+<!-- Here will go a list of the newest productions Taken from the database-->
