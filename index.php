@@ -1,9 +1,8 @@
 <?php
-include('connect_to_database.php'); //connection closed at the end of this file
 //EXTRA DEBUGGING STUFF TO REFORM THE DATABASE IF NEED BE.
 $debug = TRUE;
 $recreate_database_from_new = ($debug && isset($_GET["new_db"]) && $_GET["new_db"]=="YeS") ? TRUE : FALSE;
-
+include('connect_to_database.php'); //connection closed at the end of this file
 $valid_pages = array( //Also used for the menu
 	'home' => 'Home',
 	'productions' => 'Current Productions',
