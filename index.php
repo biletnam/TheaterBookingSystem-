@@ -48,7 +48,7 @@ else {
 	<body>
 		<div id="wrapper">
 			<div id="header">
-				<h1><a href="/">Caspar's Theatre</a></h1>
+				<h1><a href="">Caspar's Theatre</a></h1>
 				<p>The beginning of something beautiful...</p>
 			</div>
 			<div style="clear: both;"></div>
