@@ -8,6 +8,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+//DEBUGGING CODE TO DELETE THE DATABASE
+if (isset($recreate_database_from_new) && $recreate_database_from_new) {
+	$conn->query("DROP DATABASE $dbname;");
+	echo "deleting database and remaking";
+}
+
 // Create database
 $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
 if ($conn->query($sql) === TRUE) {
