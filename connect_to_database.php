@@ -33,6 +33,7 @@ function drop_database($conn, $dbname){
 function select_db($conn, $dbname) {
 	$conn->select_db($dbname);
 }
+
 // DEBUGIING CODE TO RECREATE A DATABASE
 if ($debug && $recreate_database_from_new) {
 	echo "recreating db";

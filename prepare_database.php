@@ -39,6 +39,7 @@ function create_default_database($conn, $dbname) {
 
 	$create_tables[2] = "CREATE TABLE Production(
 	 title varchar(100) not null,
+	 url varchar(30) not null,
 	 basic_price numeric(5,2) not null,
 	 mins smallint default 90,
 	 genre varchar(30),

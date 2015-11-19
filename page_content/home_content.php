@@ -13,15 +13,16 @@ function display_performance($performance){
 	$description = $performance['description'];
 	$mins = $performance['mins'];
 	$genre = $performance['genre'];
+	$production_url = $performance['url'];
 
-	$cover_image_src = "images/$title/cover.jpg";
+	$cover_image_src = "/images/$title/cover.jpg";
 	$coverimage = "no cover image";
 	//if (file_exists($coverimage)){
 		$coverimage = "<img src=\"$cover_image_src\" height=\"300\" align=\"right\">";
 	//}
 	echo "<div class=\"post\">
 		$coverimage
-		<h2><a href=\"?page=productions&production=$title\">$title</a></h2>
+		<h2><a href=\"/productions/$production_url\">$title</a></h2>
 		<p>$description</p>
 		<ul class=\"performance-details\">
 			<li>Runtime: $mins minutes</li>

@@ -2,45 +2,62 @@
 //EXTRA DEBUGGING STUFF TO REFORM THE DATABASE IF NEED BE.
 $debug = TRUE;
 $recreate_database_from_new = ($debug && isset($_GET["new_db"]) && $_GET["new_db"]=="YeS") ? TRUE : FALSE;
-include('connect_to_database.php'); //connection closed at the end of this file
+
+function stripUri($uri){
+	$strip_after = "?";
+	$pos = strpos($uri, "?");
+	if ($pos!=0) {$uri = substr($uri,0, $pos);}
+	return $uri;
+}
+
+
+function getCurrentUri()
+{
+	$uri = stripUri($_SERVER['REQUEST_URI']);
+	$uri = array_slice(explode("/",$uri),1); //first one seems to be blank always
+	return $uri;
+}
+
 $valid_pages = array( //Also used for the menu
+	//url => Menu Item
 	'home' => 'Home',
 	'productions' => 'Current Productions',
 	'shows' => 'Upcoming Shows',
 	'book' => 'Book Seats',
 	'location' => 'Location',
-	);
+);
 
-$page = 'home';
-if (isset($_GET['page'])) { //if set
-	if (array_key_exists($_GET['page'], $valid_pages)) { //and valid
-		$page = $_GET['page']; //change page
+$uri = getCurrentUri();
+
+function getCurrentPage($uri, $valid_pages){
+	if (array_key_exists($uri[0], $valid_pages)) {
+		return $uri[0];
+	}
+	else {
+		return 'home';
 	}
 }
 
-//when in production, this should revert to $page = 'home'
-//if there is an error
-$page_settings = 'page_settings/'.$page.'_settings.php';
-if (file_exists($page_settings)) {
-	include('page_settings/'.$page.'_settings.php'); //get the page settings
-//it knows what further information to get from the _GET and 
-//the _POST variables, parses them and sets the variables the 
-//the page-content will use.
-//it also sets the page specific variables such as the description etc.
+$page = getCurrentPage($uri, $valid_pages);
 
-//it also connects to the database if required.
+
+$script = 'page_settings/'.$page.'_settings.php';
+if (file_exists($script)) {
+	include($script);
 }
 else {
 	include('page_settings/home_settings.php');
 	$error = "The requested page does not exist, you are viewing the home page";
 }
+
+
 ?>
 
 <!DOCTYPE html>
 <html>
 	<head>
 		<title><?php echo $page_title; ?></title>
-		<link rel="stylesheet" href="styles/style.css">
+		<link rel="stylesheet" href="/styles/style.css">
 		<meta name="keywords" content="Caspars Theater, Bookings, Theater, Seats, Shows, Musicals, Plays">
 		<meta name="description" content="<?php echo $page_description; ?>">
 		<meta name="author" content="Caspar Nonclercq">
@@ -65,7 +82,7 @@ else {
 							else {
 								$current_page_item = '';
 							}
-							echo "<li$current_page_item><a href=\"?page=$menu_link\">$menu_link_name</a></li>\n";
+							echo "<li$current_page_item><a href=\"/$menu_link\">$menu_link_name</a></li>\n";
 						}
 
 						foreach ($valid_pages as $menu_link => $menu_link_name){
