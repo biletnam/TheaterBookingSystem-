@@ -31,8 +31,6 @@ else {
 	include('page_settings/home_settings.php');
 	$error = "The requested page does not exist, you are viewing the home page";
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -64,7 +62,7 @@ else {
 							else {
 								$current_page_item = '';
 							}
-							echo "<li$current_page_item><a href=\"/?page=$menu_link\">$menu_link_name</a></li>\n";
+							echo "<li$current_page_item><a href=\"?page=$menu_link\">$menu_link_name</a></li>\n";
 						}
 
 						foreach ($valid_pages as $menu_link => $menu_link_name){
