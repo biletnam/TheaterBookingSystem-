@@ -3,7 +3,7 @@
 $debug = TRUE;
 $recreate_database_from_new = ($debug && isset($_GET["new_db"]) && $_GET["new_db"]=="YeS") ? TRUE : FALSE;
 
-include('connect_to_database.php'); //connection closed at the end of this file
+include('database/connect_to_database.php'); //connection closed at the end of this file
 
 //SET PAGE VARIABLES
 $page_title = "Home Page Title";
