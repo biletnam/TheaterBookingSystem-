@@ -30,4 +30,4 @@ def get_date_time():
     
 
 for i in range(50):
-    print "insert into Performance values (\"" + get_date_time() + "\", \'" + random.choice(plays).replace('\'', '\\\'') + "\');"
+    print "insert into Performance values (NULL, \"" + get_date_time() + "\", \'" + random.choice(plays).replace('\'', '\\\'') + "\');"
