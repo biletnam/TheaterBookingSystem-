@@ -72,15 +72,14 @@ function display_performance($performance){
 		LIMIT 5
 		");
 		//get it to return the number of tickets available.
-	var_dump($handle);
 	$handle->bind_param("s", $title);
 	$handle->execute();
 	$next_performances = $handle->get_result();
-	echo "np<br>";
-	var_dump($next_performances);
+	//echo "np<br>";
+	//var_dump($next_performances);
 	if ($next_performances){
 		foreach($next_performances as $show) {
-			$date = date('l F jS o',strtotime(str_replace('-','/', $show['date_time'])));
+			$date = date('l, F jS o',strtotime(str_replace('-','/', $show['date_time'])));
 			$link = "shows.php?show=".$show['date_time'];
 			echo "<li><a href=\"$link\">$date</a></li>";
 		}
