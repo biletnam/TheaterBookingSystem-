@@ -14,7 +14,7 @@ $current_page = "productions";
 
 //DO PAGE QUERIES
 $newest_performances_sql = "
-SELECT DISTINCT pr.* 
+SELECT DISTINCT pr.*
 FROM Production pr
   JOIN Performance pe on pe.title = pr.title
 ORDER BY pe.date_time DESC
@@ -59,7 +59,8 @@ function display_performance($performance){
 		</ul>
 		<h3>Next Performances</h3>
 		<ul>";
-	
+
+
 	$handle = $conn->prepare("
 		SELECT * 
 		FROM Performance
@@ -74,8 +75,7 @@ function display_performance($performance){
 	var_dump($handle);
 	$handle->bind_param("s", $title);
 	$handle->execute();
-	$handle->bind_result($newest_performances);
-	$handle->fetch();
+	$next_performances = $handle->get_result();
 	echo "np<br>";
 	var_dump($next_performances);
 	if ($next_performances){
@@ -85,7 +85,7 @@ function display_performance($performance){
 			echo "<li><a href=\"$link\">$date</a></li>";
 		}
 	}
-	echo "		
+	echo "
 	</div>";
 
 }
