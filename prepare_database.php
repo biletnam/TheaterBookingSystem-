@@ -48,9 +48,11 @@ function create_default_database($conn, $dbname) {
 	);";
 
 	$create_tables[3] = "CREATE TABLE Performance(
+	 id mediumint not null AUTO_INCREMENT,
 	 date_time datetime not null,
 	 title varchar(100) not null,
-	 primary key (date_time),
+	 primary key (id),
+     unique (date_time),
 	 foreign key (title) references Production(title)
 	);";
 
