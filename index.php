@@ -19,7 +19,7 @@ FROM Production pr
   JOIN Performance pe on pe.title = pr.title
 ORDER BY pe.date_time DESC
 LIMIT 10;
-";
+"; //todo get it to find the next performance
 
 $newest_performances = $conn->query($newest_performances_sql);
 
@@ -56,7 +56,7 @@ function display_performance($performance){
 	//}
 	echo "<div class=\"post\">
 		$coverimage
-		<h2><a href=\"?page=productions&production=$title\">$title</a></h2>
+		<h2><a href=\"productions.php?production=$title\">$title</a></h2>
 		<p>$description</p>
 		<ul class=\"performance-details\">
 			<li>Runtime: $mins minutes</li>
