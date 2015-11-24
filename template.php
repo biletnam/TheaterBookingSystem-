@@ -1,11 +1,10 @@
 <?php
 
 $menu_items = array(
-	'home' => 'Home',
+	'index' => 'Home',
 	'productions' => 'Current Productions',
 	'shows' => 'Upcoming Shows',
 	'book' => 'Book Seats',
-	'location' => 'Location',
 	);
 
 function template_top($page_title, $page_description, $menu) {
