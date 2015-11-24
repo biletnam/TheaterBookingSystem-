@@ -59,24 +59,31 @@ function display_performance($performance){
 		</ul>
 		<h3>Next Performances</h3>
 		<ul>";
-		
-	$next_5_performances_sql = "
-	SELECT * 
-	FROM Performance
-	WHERE 
-		Performance.title = '$title'
-		AND
-		Performance.date_time > (SELECT current_date)
-	ORDER BY Performance.date_time;
-	LIMIT 5;
-	";
 	
-	$next_performances = $conn->query($next_5_performances_sql);
+	$handle = $conn->prepare("
+		SELECT * 
+		FROM Performance
+		WHERE 
+			Performance.title = ?
+			AND
+			Performance.date_time > (SELECT current_date)
+		ORDER BY Performance.date_time
+		LIMIT 5
+		");
+		//get it to return the number of tickets available.
+	var_dump($handle);
+	$handle->bind_param("s", $title);
+	$handle->execute();
+	$handle->bind_result($newest_performances);
+	$handle->fetch();
+	echo "np<br>";
 	var_dump($next_performances);
-	foreach($next_performances as $show) {
-		$date = date($show['date_time']);
-		$link = "shows.php?show=".$show['date_time'];
-		echo "<li><a href=\"$link\">$date</a></li>";
+	if ($next_performances){
+		foreach($next_performances as $show) {
+			$date = date('l F jS o',strtotime(str_replace('-','/', $show['date_time'])));
+			$link = "shows.php?show=".$show['date_time'];
+			echo "<li><a href=\"$link\">$date</a></li>";
+		}
 	}
 	echo "		
 	</div>";
