@@ -1,8 +1,5 @@
 <?php
-$servername = "dragon.ukc.ac.uk";
-$username = "cn249";
-$password = "zbrandh";
-$dbname = "cn249";
+include('db_properties.php');
 
 function connect_to_database($servername, $username, $password, $dbname){
 	$conn = new mysqli($servername, $username, $password, $dbname);
