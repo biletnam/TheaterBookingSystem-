@@ -67,7 +67,7 @@ function template_bottom(){
 				<p>Copyright 2015</p>
 			</div>
 		</div>
-
+		</div>
 		</body>
 	</html>";
 }
