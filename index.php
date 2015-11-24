@@ -20,6 +20,7 @@ FROM Production pr
 ORDER BY pe.date_time DESC
 LIMIT 10;
 "; //todo get it to find the next performance
+//todo get it to find out when it's first performance was/is
 
 $newest_performances = $conn->query($newest_performances_sql);
 
