@@ -73,7 +73,6 @@ foreach ($newest_performances as $performace) {
 
 ?>
 
-
 <?php
 
 //FINISH UP TEMPLATE

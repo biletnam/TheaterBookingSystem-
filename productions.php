@@ -6,21 +6,23 @@ $recreate_database_from_new = ($debug && isset($_GET["new_db"]) && $_GET["new_db
 include('database/connect_to_database.php'); //connection closed at the end of this file
 
 //SET PAGE VARIABLES
-$page_title = "Home Page Title";
+$page_title = "Productions at Caspar's Theater";
 
-$page_description = "Home Page of Caspar's Theatre, come here to see the best shows in town. Online Booking Available NOW!";
+$page_description = "A list of all the productions available at this magnificant place. Here!";
 
-$current_page = "home";
+$current_page = "productions";
 
 //DO PAGE QUERIES
 $newest_performances_sql = "
-SELECT DISTINCT pr.* 
+SELECT DISTINCT pr.*
 FROM Production pr
   JOIN Performance pe on pe.title = pr.title
 ORDER BY pe.date_time DESC
 LIMIT 10;
 "; //todo get it to find the next performance
 //todo get it to find out when it's first performance was/is
+//make it only choose performances that have a performance in the future
+
 
 $newest_performances = $conn->query($newest_performances_sql);
 
@@ -33,18 +35,10 @@ echo template_top($page_title, $page_description, menu($menu_items, $current_pag
 //NOW FOR THE CONTENT
 ?>
 
-
-<div class="post highlighted">
-<img src="images/logo.png" width="280" align="left">
-<h2>Welcome</h2>
-<p>Welcome to Caspar's Theater. This is the home of good productions. We have every kind of show you could care to watch. Here is the place to be. The place to be is here. The place to be is not there, it's here. Here. From this website you can browse our productions, present, future and now! There is also a link to see which shows will be playing soon, in the near future, tonight and tomorrow and in the far future, as well as all in between now and then, and even more importantly, then and now! If you wish to book a show, you can choose which show to book first by going to the productions, or to the shows, or to the booking place, where you will be presented with a list, a huge list, a list of all, yes all, of our shows. Can you believe it, yes all of them are available for booking! Except of course the ones that are fully booked. Of course!</p>
-
-<p>Below is a list of our most recent productions. Check back soon for more!</p>
-</div>
-
 <?php
 
 function display_performance($performance){
+	global $conn;
 	$title = $performance['title'];
 	$description = $performance['description'];
 	$mins = $performance['mins'];
@@ -63,6 +57,35 @@ function display_performance($performance){
 			<li>Runtime: $mins minutes</li>
 			<li>Genre: $genre</li>
 		</ul>
+		<h3>Next Performances</h3>
+		<ul>";
+
+
+	$handle = $conn->prepare("
+		SELECT * 
+		FROM Performance
+		WHERE 
+			Performance.title = ?
+			AND
+			Performance.date_time > (SELECT current_date)
+		ORDER BY Performance.date_time
+		LIMIT 5
+		");
+		//get it to return the number of tickets available.
+	var_dump($handle);
+	$handle->bind_param("s", $title);
+	$handle->execute();
+	$next_performances = $handle->get_result();
+	echo "np<br>";
+	var_dump($next_performances);
+	if ($next_performances){
+		foreach($next_performances as $show) {
+			$date = date('l F jS o',strtotime(str_replace('-','/', $show['date_time'])));
+			$link = "shows.php?show=".$show['date_time'];
+			echo "<li><a href=\"$link\">$date</a></li>";
+		}
+	}
+	echo "
 	</div>";
 
 }
@@ -72,7 +95,6 @@ foreach ($newest_performances as $performace) {
 }
 
 ?>
-
 
 <?php
 

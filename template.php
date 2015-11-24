@@ -1,11 +1,10 @@
 <?php
 
 $menu_items = array(
-	'home' => 'Home',
+	'index' => 'Home',
 	'productions' => 'Current Productions',
 	'shows' => 'Upcoming Shows',
 	'book' => 'Book Seats',
-	'location' => 'Location',
 	);
 
 function template_top($page_title, $page_description, $menu) {
@@ -14,10 +13,10 @@ function template_top($page_title, $page_description, $menu) {
 	<!DOCTYPE html>
 	<html>
 		<head>
-			<title><?php echo $page_title; ?></title>
+			<title>$page_title</title>
 			<link rel=\"stylesheet\" href=\"styles/style.css\">
 			<meta name=\"keywords\" content=\"Caspars Theater, Bookings, Theater, Seats, Shows, Musicals, Plays\">
-			<meta name=\"description\" content=\"<?php echo $page_description; ?>\">
+			<meta name=\"description\" content=\"page_description\">
 			<meta name=\"author\" content=\"Caspar Nonclercq\">
 		</head>
 		<body>
