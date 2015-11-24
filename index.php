@@ -46,6 +46,7 @@ echo template_top($page_title, $page_description, menu($menu_items, $current_pag
 
 function display_performance($performance){
 	$title = $performance['title'];
+	$url = $performance['url'];
 	$description = $performance['description'];
 	$mins = $performance['mins'];
 	$genre = $performance['genre'];
@@ -57,7 +58,7 @@ function display_performance($performance){
 	//}
 	echo "<div class=\"post\">
 		$coverimage
-		<h2><a href=\"productions.php?production=$title\">$title</a></h2>
+		<h2><a href=\"productions.php?production=$url\">$title</a></h2>
 		<p>$description</p>
 		<ul class=\"performance-details\">
 			<li>Runtime: $mins minutes</li>
