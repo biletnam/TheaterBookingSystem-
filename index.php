@@ -33,7 +33,10 @@ echo template_top($page_title, $page_description, menu($menu_items, $current_pag
 //NOW FOR THE CONTENT
 ?>
 
+<?php
 
+if (!isset($_GET["production"])){
+	?>
 <div class="post highlighted">
 <img src="images/logo.png" width="280" align="left">
 <h2>Welcome</h2>
@@ -70,6 +73,12 @@ function display_performance($performance){
 
 foreach ($newest_performances as $performace) {
 	display_performance($performace);
+}
+
+}//endif
+
+else {
+	echo "your looking at a production";
 }
 
 ?>

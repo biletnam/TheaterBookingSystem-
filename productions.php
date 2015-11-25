@@ -70,7 +70,7 @@ function display_performance($performance){
 			AND
 			Performance.date_time > (SELECT current_date)
 		ORDER BY Performance.date_time
-		LIMIT 5
+		LIMIT 3
 		");
 		//get it to return the number of tickets available.
 	$handle->bind_param("s", $title);
