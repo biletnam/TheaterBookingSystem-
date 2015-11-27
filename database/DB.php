@@ -172,11 +172,12 @@ class DB {
 	}
 
 	public function getNextPerformances($limit=10) {
-		$sql = "SELECT s.*, p.description, p.mins, p.genre
+		$sql = "SELECT s.*,
+						p.description, p.mins, p.genre
 				FROM Performance s
-					JOIN Production p on p.title = s.title
-				WHERE p.date_time > (SELECT current_date)
-				ORDER BY p.date_time ASC
+					JOIN Production p ON p.title = s.title
+				WHERE s.date_time > (SELECT current_date)
+				ORDER BY s.date_time ASC
 				LIMIT :lim;";
 		$params = array(":lim" => $limit);
 

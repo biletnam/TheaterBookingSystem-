@@ -115,10 +115,10 @@ class Template {
 	// UTILITY FUNCTIONS
 	////////////////////
 
-	private function shortenText($text, $length = 100) {
+	private function shortenText($text, $length = 150) {
 		if (strlen($text) <= $length) {return $text;}
-		$cut_on = strpos($text, " ", $length);
-		return substr($text, $length)."...";
+		$cut_on = strpos($text, ' ', $length);
+		return substr($text,0, $cut_on)."...";
 	}
 
 	////////////////////////////////
@@ -180,14 +180,14 @@ class Template {
 		$genre = $performance['genre'];
 
 		//process data
-		$heading = $date('l, F jS o', $date_time)." ".$title;
+		$heading = date('l, F jS o', strtotime($date_time))." ".$title;
 		$desc = $this->shortenText($description);
 
 		//render data
 
 		echo "<div class=\"post show\">
 			<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
-			<p>$dec</p>
+			<p>$desc</p>
 			</div>";
 	}
 }//end class template
