@@ -6,11 +6,9 @@ $menu_items = array(
 	'shows' => 'Upcoming Shows',
 	'book' => 'Book Seats',
 	);
-
-function template_top($page_title, $page_description, $menu) {
-
-	return "
-	<!DOCTYPE html>
+	
+function include_head($page_title, $page_description) {
+	return "<!DOCTYPE html>
 	<html>
 		<head>
 			<title>$page_title</title>
@@ -18,7 +16,12 @@ function template_top($page_title, $page_description, $menu) {
 			<meta name=\"keywords\" content=\"Caspars Theater, Bookings, Theater, Seats, Shows, Musicals, Plays\">
 			<meta name=\"description\" content=\"page_description\">
 			<meta name=\"author\" content=\"Caspar Nonclercq\">
-		</head>
+		</head>";
+}
+
+function template_top($page_title, $page_description, $menu) {
+
+	return include_head($page_title, $page_description)."
 		<body>
 			<div id=\"wrapper\">
 				<div id=\"header\">
