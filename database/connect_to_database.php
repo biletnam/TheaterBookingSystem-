@@ -2,7 +2,7 @@
 include('db_properties.php');
 
 function connect_to_database($servername, $username, $password, $dbname){
-	$conn = PDO("mysql:host=$host;dbname=$dbname", $user, $pwd);
+	$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 	return $conn;
@@ -11,15 +11,14 @@ function connect_to_database($servername, $username, $password, $dbname){
 function connect_to_server($servername, $username, $password){
 	$conn = newPDO("mysql:host=$host", $user, $pwd);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	return $conn
-
+	return $conn;
 }
 
 function connected($conn) {
-	if ($conn->connect_error) {
-		return FALSE;
+	if ($conn) {
+		return TRUE;
 	}
-	return TRUE;
+	return FALSE;
 }
 
 function drop_database($conn, $dbname){
