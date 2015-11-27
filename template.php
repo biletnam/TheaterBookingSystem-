@@ -111,10 +111,22 @@ class Template {
 		$this->close_html();
 	}
 
+	////////////////////
+	// UTILITY FUNCTIONS
+	////////////////////
+
+	private function shortenText($text, $length = 100) {
+		if (strlen($text) <= $length) {return $text;}
+		$cut_on = strpos($text, " ", $length);
+		return substr($text, $length)."...";
+	}
+
 	////////////////////////////////
 	// CONTENT SPECFIC FUNCTIONS
 	////////////////////////////////
 
+	//////////////////////////
+	//Production
 	function display_production($production, $num_shows_to_display, $show_gallery, $DB=NULL) {
 		//get production propeties
 		$title = $production['title'];
@@ -126,7 +138,7 @@ class Template {
 		$cover_image_src = "images/$title/cover.jpg";
 		$coverimage = "<img src=\"$cover_image_src\" height=\"300\" align=\"right\">";
 
-		echo "<div class=\"post\">
+		echo "<div class=\"post production\">
 			$coverimage
 			<h2><a href=\"productions.php?production=$url\">$title</a></h2>
 			<p>$description</p>
@@ -136,10 +148,10 @@ class Template {
 			</ul>";
 
 		if ($num_shows_to_display > 0 && $DB) {
-			echo "<h3>Next Performances</h3>
+			echo "<h3><a href=\"productions.php?production=$url\">Next Performances</a></h3>
 			<ul>";
 
-			$next_performances = $DB->getProductionsNextPerformances($title);
+			$next_performances = $DB->getProductionsNextPerformances($title, $num_shows_to_display);
 			
 			if ($next_performances){
 				foreach($next_performances as $show) {
@@ -155,7 +167,27 @@ class Template {
 		}
 		echo "
 		</div>";
+	}
 
+	//////////////////
+	// Show
+	function display_performance($performance) {
+		$title = $performance['title'];
+		$date_time = str_replace('-','/', $performance['date_time']);
+		$id = $performance['id'];
+		$description = $performance['description'];
+		$mins = $performance['mins'];
+		$genre = $performance['genre'];
 
+		//process data
+		$heading = $date('l, F jS o', $date_time)." ".$title;
+		$desc = $this->shortenText($description);
+
+		//render data
+
+		echo "<div class=\"post show\">
+			<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
+			<p>$dec</p>
+			</div>";
 	}
 }//end class template
