@@ -22,9 +22,8 @@ echo template_top($page_title, $page_description, menu($menu_items, $current_pag
 if (!isset($_GET['production'])) {
 	$newest_productions = $DB->getNewestProductions(10);
 
-	var_dump($newest_productions);
 
-	foreach ($newest_productions as $production)
+	foreach ($newest_productions as $production) {
 		$title = $production['title'];
 		$url = $production['url'];
 		$description = $production['description'];
@@ -57,6 +56,7 @@ if (!isset($_GET['production'])) {
 		}
 		echo "
 		</div>";
+	}
 
 } //$_GET['productions'] is not set
 
