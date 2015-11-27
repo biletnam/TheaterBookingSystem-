@@ -26,7 +26,7 @@ class DB {
 		$conn = null;
 	}
 	
-	public function connect($recreate_database_from_new) {
+	public function connect($recreate_database_from_new = FALSE) {
 		try {
 			$this->conn = new PDO("mysql:host=$this->host;dbname=$this->dbname", $this->username, $this->password);
 			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -140,6 +140,7 @@ class DB {
 	}
 	
 	public function getProductionsNextPerformances($production_title, $limit=3) {
+		//check if it's already been prepared
 		$this_query_name = "#getProductionsNextPerformances";
 		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
 			$sql = "SELECT * 
@@ -150,12 +151,13 @@ class DB {
 					Performance.date_time > (SELECT current_date)
 				ORDER BY Performance.date_time
 				LIMIT :lim;";
+			//prepare
 			$this->makePreparedQuery($this_query_name, $sql);
 		}
-		
+		//build the params		
 		$params = array(":title" => $production_title,
 						":lim" => $limit);
-		
+		//return the results
 		return $this->executePreparedQuery($this_query_name, $params);
 	}
 }
