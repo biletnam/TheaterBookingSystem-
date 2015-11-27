@@ -22,12 +22,14 @@ echo template_top($page_title, $page_description, menu($menu_items, $current_pag
 if (!isset($_GET['production'])) {
 	$newest_productions = $DB->getNewestProductions(10);
 
-	foreach ($newest_productions as $performance)
-		$title = $performance['title'];
-		$url = $performance['url'];
-		$description = $performance['description'];
-		$mins = $performance['mins'];
-		$genre = $performance['genre'];
+	var_dump($newest_productions);
+
+	foreach ($newest_productions as $production)
+		$title = $production['title'];
+		$url = $production['url'];
+		$description = $production['description'];
+		$mins = $production['mins'];
+		$genre = $production['genre'];
 
 		$cover_image_src = "images/$title/cover.jpg";
 		$coverimage = "<img src=\"$cover_image_src\" height=\"300\" align=\"right\">";
@@ -36,7 +38,7 @@ if (!isset($_GET['production'])) {
 			$coverimage
 			<h2><a href=\"productions.php?production=$url\">$title</a></h2>
 			<p>$description</p>
-			<ul class=\"performance-details\">
+			<ul class=\"production-details\">
 				<li>Runtime: $mins minutes</li>
 				<li>Genre: $genre</li>
 			</ul>
@@ -45,10 +47,7 @@ if (!isset($_GET['production'])) {
 
 
 		$next_performances = $DB->getProductionsNextPerformances($title);
-		$handle->bind_param("s", $title);
-		$handle->execute();
-		$next_performances = $handle->get_result();
-
+		
 		if ($next_performances){
 			foreach($next_performances as $show) {
 				$date = date('l, F jS o',strtotime(str_replace('-','/', $show['date_time'])));

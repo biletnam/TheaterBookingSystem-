@@ -91,7 +91,8 @@ class DB {
 	public function query($sql, $params) {
 		if (!$this->connected) {die("must connect first");}
 		$prepared_query = $this->conn->prepare($sql);
-		return $prepared_query->execute($params);
+		$prepared_query->execute($params);
+		return $prepared_query->fetchAll();
 	}
 	
 	//////////////////////////////
