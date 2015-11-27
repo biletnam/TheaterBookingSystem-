@@ -9,7 +9,7 @@ function connect_to_database($servername, $username, $password, $dbname){
 }
 
 function connect_to_server($servername, $username, $password){
-	$conn = newPDO("mysql:host=$host", $user, $pwd);
+	$conn = new PDO("mysql:host=$host", $user, $pwd);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	return $conn;
 }
