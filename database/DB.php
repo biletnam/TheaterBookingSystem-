@@ -18,11 +18,11 @@ class DB {
 	}
 
 	public function __destruct(){
-		$this->closeConnection();
+		$this->close();
 	}
 	
 
-	public function closeConnection() {
+	public function close() {
 		$conn = null;
 	}
 	
@@ -89,6 +89,7 @@ class DB {
 	
 	//This function is public, but you are encourged to
 	//make a more robust preset version below as a preset
+	//and if apprioprate use permenant prepared query.
 	public function query($sql, $params) {
 		if (!$this->connected) {die("must connect first");}
 		$prepared_query = $this->conn->prepare($sql);
@@ -138,6 +139,15 @@ class DB {
 		
 		return $this->query($sql, $params);
 	}
+
+	public function getProductionByURL($url) {
+		$sql = "SELECT *
+				FROM Production 
+				WHERE Production.url = :url;";
+		$params = array(":url" => $url);
+
+		return $this->query($sql, $params);
+	}
 	
 	public function getProductionsNextPerformances($production_title, $limit=3) {
 		//check if it's already been prepared
@@ -160,6 +170,16 @@ class DB {
 		//return the results
 		return $this->executePreparedQuery($this_query_name, $params);
 	}
-}
 
-?>
+	public function getNextPerformances($limit=10) {
+		$sql = "SELECT s.*, p.description, p.mins, p.genre
+				FROM Performance s
+					JOIN Production p on p.title = s.title
+				WHERE p.date_time > (SELECT current_date)
+				ORDER BY p.date_time ASC
+				LIMIT :lim;";
+		$params = array(":lim" => $limit);
+
+		return $this->query($sql, $params);
+	}
+}?>
