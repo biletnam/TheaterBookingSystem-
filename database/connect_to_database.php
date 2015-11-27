@@ -2,19 +2,23 @@
 include('db_properties.php');
 
 function connect_to_database($servername, $username, $password, $dbname){
-	$conn = new mysqli($servername, $username, $password, $dbname);
+	$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 	return $conn;
 }
 
 function connect_to_server($servername, $username, $password){
-	return new mysqli($servername, $username, $password);
+	$conn = new PDO("mysql:host=$host", $user, $pwd);
+	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	return $conn;
 }
 
 function connected($conn) {
-	if ($conn->connect_error) {
-		return FALSE;
+	if ($conn) {
+		return TRUE;
 	}
-	return TRUE;
+	return FALSE;
 }
 
 function drop_database($conn, $dbname){
@@ -22,7 +26,7 @@ function drop_database($conn, $dbname){
 }
 
 function select_db($conn, $dbname) {
-	$conn->select_db($dbname);
+	$conn->query("USE $dbname");
 }
 // DEBUGIING CODE TO RECREATE A DATABASE
 if ($debug && $recreate_database_from_new) {
