@@ -30,8 +30,9 @@ if (!isset($_GET['production'])) {
 
 } //$_GET['productions'] is not set
 
-else { //$_GET['production'] is set
-	echo "You looked for ".$_GET['production'];
+else {
+	$production = $DB->getProductionByURL($_GET["production"]);
+	$Template->display_production($production[0], 30, TRUE, $DB);
 }
 
 //FINISH UP TEMPLATE
