@@ -8,6 +8,7 @@ class DB {
 	
 	private $conn;
 	private $connected = FALSE;
+	private $prepared_quieres = array();
 
 	public function __construct($s, $u, $p, $d) {
 		$this->host = $s;
@@ -87,26 +88,49 @@ class DB {
 	}
 	
 	//This function is public, but you are encourged to
-	//make a more robust preset version below
+	//make a more robust preset version below as a preset
 	public function query($sql, $params) {
 		if (!$this->connected) {die("must connect first");}
 		$prepared_query = $this->conn->prepare($sql);
 		$prepared_query->execute($params);
 		return $prepared_query->fetchAll();
 	}
+
+	public function makePreparedQuery($name, $prepared_sql){
+		//will not overwrite a name already used
+		if (!array_key_exists($name, $this->prepared_quieres) && 
+			$this->connected){
+			$prepared_query = $this->conn->prepare($prepared_sql);
+			$this->prepared_quieres[$name]=$prepared_query;
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	public function executePreparedQuery($name, $params){
+		if (array_key_exists($name, $this->prepared_quieres) && 
+			$this->connected){
+			$this->prepared_quieres[$name]->execute($params);
+			return $this->prepared_quieres[$name]->fetchAll();
+		}
+	}
 	
 	//////////////////////////////
 	//PRESET QUERIES
 	//////////////////////////////
+	//if a query is going to be used more than once per page
+	//then store the prepared query
+	//if it's only once, there's probably not much point.
 	
 	public function getNewestProductions($limit = 10) {
+
 		$sql = "SELECT DISTINCT pr.* 
 			FROM Production pr
 			  JOIN 
 			  Performance pe on pe.title = pr.title
 			ORDER BY pe.date_time DESC
-			LIMIT 0,:n;";
-		$params = array(":n" => $limit);
+			LIMIT 0,:lim;";
+		$params = array(":lim" => $limit);
 
 		 //todo get it to find the next performance
 	//todo get it to find out when it's first performance was/is
@@ -116,19 +140,23 @@ class DB {
 	}
 	
 	public function getProductionsNextPerformances($production_title, $limit=3) {
-		$sql = "SELECT * 
-		FROM Performance
-		WHERE 
-			Performance.title = :p
-			AND
-			Performance.date_time > (SELECT current_date)
-		ORDER BY Performance.date_time
-		LIMIT :n;";
+		$this_query_name = "#getProductionsNextPerformances";
+		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
+			$sql = "SELECT * 
+				FROM Performance
+				WHERE 
+					Performance.title = :title
+					AND
+					Performance.date_time > (SELECT current_date)
+				ORDER BY Performance.date_time
+				LIMIT :lim;";
+			$this->makePreparedQuery($this_query_name, $sql);
+		}
 		
-		$params = array(":p" => $production_title,
-						":n" => $limit);
+		$params = array(":title" => $production_title,
+						":lim" => $limit);
 		
-		return $this->query($sql, $params);
+		return $this->executePreparedQuery($this_query_name, $params);
 	}
 }
 
