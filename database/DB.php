@@ -32,6 +32,9 @@ class DB {
 	public make_db() {
 		if (!$connected) {die("must connect first");}
 		$sql_files = (
+		//ORDERING HERE MATTERS
+		//this is the order they will be executed in.
+		//So you must make sure it can run.
 			"database/tables.sql",
 			"database/zone.sql",
 			"database/seat.sql",
@@ -59,10 +62,12 @@ class DB {
 		
 	}
 	
-	private query($sql, $params) {
+	//This function is public, but you are encourged to
+	//make a more robust preset version below
+	public query($sql, $params) {
 		if (!$connected) {die("must connect first");}
-		$conn->prepare($sql);
-		return $conn->execute($params);
+		$prepared_query = $conn->prepare($sql);
+		return $prepared_query->execute($params);
 	}
 	
 	//////////////////////////////
