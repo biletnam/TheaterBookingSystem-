@@ -17,7 +17,7 @@ class DB {
 	}
 
 	public function __destruct(){
-		closeConnection();
+		$this->closeConnection();
 	}
 	
 
@@ -29,6 +29,7 @@ class DB {
 		try {
 			$this->conn = new PDO("mysql:host=$this->host;dbname=$this->dbname", $this->username, $this->password);
 			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 			$this->connected = TRUE;
 			if ($recreate_database_from_new) {
 				dropDB();
@@ -38,7 +39,7 @@ class DB {
 			return TRUE;
 		}
 		catch (PDOException $e) {
-			echo "PDOException: ".$e.getMessage();
+			echo "PDOException: ".$e->getMessage();
 			return FALSE;
 		}
 	}
@@ -103,7 +104,7 @@ class DB {
 			  JOIN 
 			  Performance pe on pe.title = pr.title
 			ORDER BY pe.date_time DESC
-			LIMIT :n;";
+			LIMIT 0,:n;";
 		$params = array(":n" => $limit);
 
 		 //todo get it to find the next performance
