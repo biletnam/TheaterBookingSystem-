@@ -155,6 +155,8 @@ class Template {
 			
 			if ($next_performances){
 				foreach($next_performances as $show) {
+					$num_tickets = $DB->getNumTicketsAvailable($show['id']);
+					var_dump($num_tickets);
 					$date = date('l, F jS o',strtotime(str_replace('-','/', $show['date_time'])));
 					$link = "shows.php?show=".$show['id'];
 					echo "<li><a href=\"$link\">$date</a></li>";
