@@ -183,4 +183,20 @@ class DB {
 
 		return $this->query($sql, $params);
 	}
+
+	public function getNumTicketsAvailable($performance_id) {
+		$this_query_name = "#getNumTicketsAvailable";
+		if (!array_key_exists($this_query_name, $this->prepared_quieres)){
+			$sql = "SELECT COUNT(SELECT row_no FROM Seat)-COUNT(
+				SELECT row_no FROM Booking JOIN Performance ON
+				Booking.date_time = Performance.date_time
+				WHERE Performance.id = :perfID
+				) as available;";
+			//prepare
+			$this->makePreparedQuery($this_query_name, $sql);
+		}
+		$params = array(":perfID" => $performance_id);
+
+		return $this->executePreparedQuery($this_query_name, $params);
+	}
 }?>
