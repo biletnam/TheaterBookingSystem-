@@ -76,10 +76,8 @@ class DB {
 	
 	private function runSqlFile($filename) {
 		if (!$this->connected) {die("Cannot Run SQL File: Not Connected");}
-		$file = file($filename);
-		foreach ($file as $line_num => $sql_command) {
-			$this->unsafe_query($sql_command);
-		}
+		$sql = file_get_contents($filename);
+		$this->unsafe_query($sql);
 	}
 	
 	private function unsafe_query($sql) {
@@ -201,16 +199,38 @@ class DB {
 		return null;
 		$this_query_name = "#getNumTicketsAvailable";
 		if (!array_key_exists($this_query_name, $this->prepared_quieres)){
-			$sql = "SELECT COUNT(SELECT row_no FROM Seat)-COUNT(
-				SELECT row_no FROM Booking JOIN Performance ON
-				Booking.date_time = Performance.date_time
-				WHERE Performance.id = :perfID
-				) as available;";
+			$sql = "SELECT COUNT(*) FROM (SELECT * FROM Booking JOIN ON)";
 			//prepare
 			$this->makePreparedQuery($this_query_name, $sql);
 		}
 		$params = array(":perfID" => $performance_id);
 
 		return $this->executePreparedQuery($this_query_name, $params);
+	}
+
+	public function getTicketsAvailable($performance_id){
+		$this_query_name = "#getTicketsAvailable";
+		if (!array_key_exists($this_query_name, $this->prepared_quieres)){
+			$sql = "
+    SELECT S.row_no, S.area_name, 
+		(SELECT Production.basic_price 
+			FROM Production JOIN Performance 
+			ON Production.title = Performance.title
+			WHERE Production.id=:perfID) * 
+		(SELECT Z.price_multipler FROM Zone Z
+			JOIN Seat S on Zone.name = S.area_name
+			WHERE S.row_no = SOMETHING) as price,  
+	FROM Seat S 
+	  LEFT JOIN Booking B ON S.row_no = B.row_no 
+	WHERE S.row_no NOT IN (SELECT B.row_no 
+		FROM Booking B 
+		WHERE B.performance_id = :perfID);";
+			//prepare
+			$this->makePreparedQuery($this_query_name, $sql);
+		}
+		$params = array(":perfID" => $performance_id);
+
+		return $this->executePreparedQuery($this_query_name, $params);
+
 	}
 }?>
