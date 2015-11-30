@@ -30,12 +30,11 @@ class DB {
 		try {
 			$this->conn = new PDO("mysql:host=$this->host;dbname=$this->dbname", $this->username, $this->password);
 			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$this->conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 			$this->connected = TRUE;
 			if ($recreate_database_from_new) {
-				dropDB();
-				makeDB();
-				populateDB();
+				$this->dropDB();
+				$this->makeDB();
+				$this->populateDB();
 			}
 			return TRUE;
 		}
