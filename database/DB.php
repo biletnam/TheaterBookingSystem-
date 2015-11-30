@@ -35,6 +35,7 @@ class DB {
 				$this->dropDB();
 				$this->makeDB();
 				$this->populateDB();
+				return $this->connect(FALSE);
 			}
 			return TRUE;
 		}
@@ -45,16 +46,16 @@ class DB {
 	}
 
 	private function dropDB() {
-		$this->$conn->query("DROP DATABASE $dbname;");
+		$this->conn->query("DROP DATABASE $this->dbname;");
 	}
 
 	private function makeDB() {
-		$this->$conn->query("CREATE DATABASE IF NOT EXISTS $dbname;");
+		$this->conn->query("CREATE DATABASE IF NOT EXISTS $this->dbname;");
 	}
 	
 	private function populateDB() {
 
-		if (!$connected) {die("must connect first");}
+		if (!$this->connected) {die("must connect first");}
 		$sql_files = array (
 		//ORDERING HERE MATTERS
 		//this is the order they will be executed in.
@@ -67,16 +68,16 @@ class DB {
 		);
 		
 		foreach ($sql_files as $file) {
-			runSqlFile($filename);
+			$this->runSqlFile($file);
 		}
 	
 	}
 	
-	private function run_sql_file($filename) {
-		if (!$connected) {die("must connect first");}
+	private function runSqlFile($filename) {
+		if (!$this->connected) {die("must connect first");}
 		$file = file($filename);
 		foreach ($file as $line_num => $sql_command) {
-			unsafe_query($sql_command);
+			$this->unsafe_query($sql_command);
 		}
 	}
 	
