@@ -36,7 +36,6 @@ class DB {
 				$this->makeDB();
 				$this->selectDB();
 				$this->populateDB();
-				$this->connect();
 			}
 		}
 		catch (PDOException $e) {
@@ -58,8 +57,6 @@ class DB {
 	}
 	
 	private function populateDB() {
-
-		if (!$this->connected) {die("must connect first 4");}
 		$sql_files = array (
 		//ORDERING HERE MATTERS
 		//this is the order they will be executed in.
@@ -78,7 +75,7 @@ class DB {
 	}
 	
 	private function runSqlFile($filename) {
-		if (!$this->connected) {die("must connect first 1");}
+		if (!$this->connected) {die("Cannot Run SQL File: Not Connected");}
 		$file = file($filename);
 		foreach ($file as $line_num => $sql_command) {
 			$this->unsafe_query($sql_command);
@@ -86,7 +83,7 @@ class DB {
 	}
 	
 	private function unsafe_query($sql) {
-		if(!$this->connected) {die("must connect first 2");}
+		if(!$this->connected) {die("Cannot Run Unprepared Query: Not Connected");}
 		return $this->conn->query($sql);
 		
 	}
@@ -95,10 +92,26 @@ class DB {
 	//make a more robust preset version below as a preset
 	//and if apprioprate use permenant prepared query.
 	public function query($sql, $params) {
-		if (!$this->connected) {die("Could not execute $sql \n must connect first 3");}
+		if (!$this->connected) {die("Cannot Run Prepared Query: Not Connected");}
 		$prepared_query = $this->conn->prepare($sql);
-		$prepared_query->execute($params);
+		foreach ($params as $name => $value){
+			$this->bindParam($prepared_query, $name, $value);
+		}
+		$prepared_query->execute();
 		return $prepared_query->fetchAll();
+	}
+
+	private function bindParam($prepared_statement, $name, $value){
+		switch (gettype($value)) {
+			case 'string':
+				$prepared_statement->bindParam($name, $value, PDO::PARAM_STR, strlen($value));
+				break;
+			case 'integer':
+				$prepared_statement->bindValue($name, $value, PDO::PARAM_INT);
+				break;
+			default:
+				die("unknown PDO type found");
+		}
 	}
 
 	public function makePreparedQuery($name, $prepared_sql){
@@ -127,15 +140,14 @@ class DB {
 	//then store the prepared query
 	//if it's only once, there's probably not much point.
 	
-	public function getNewestProductions($limit = 10) {
+	public function getNewestProductions() {
 
 		$sql = "SELECT DISTINCT pr.* 
 			FROM Production pr
 			  JOIN 
 			  Performance pe on pe.title = pr.title
-			ORDER BY pe.date_time DESC
-			LIMIT 0,:lim;";
-		$params = array(":lim" => $limit);
+			ORDER BY pe.date_time DESC";
+		$params = array();
 
 		 //todo get it to find the next performance
 	//todo get it to find out when it's first performance was/is
@@ -153,7 +165,7 @@ class DB {
 		return $this->query($sql, $params);
 	}
 	
-	public function getProductionsNextPerformances($production_title, $limit=3) {
+	public function getProductionsNextPerformances($production_title) {
 		//check if it's already been prepared
 		$this_query_name = "#getProductionsNextPerformances";
 		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
@@ -163,32 +175,30 @@ class DB {
 					Performance.title = :title
 					AND
 					Performance.date_time > (SELECT current_date)
-				ORDER BY Performance.date_time
-				LIMIT :lim;";
+				ORDER BY Performance.date_time";
 			//prepare
 			$this->makePreparedQuery($this_query_name, $sql);
 		}
 		//build the params		
-		$params = array(":title" => $production_title,
-						":lim" => $limit);
+		$params = array(":title" => $production_title);
 		//return the results
 		return $this->executePreparedQuery($this_query_name, $params);
 	}
 
-	public function getNextPerformances($limit=10) {
+	public function getNextPerformances() {
 		$sql = "SELECT s.*,
 						p.description, p.mins, p.genre
 				FROM Performance s
 					JOIN Production p ON p.title = s.title
 				WHERE s.date_time > (SELECT current_date)
-				ORDER BY s.date_time ASC
-				LIMIT :lim;";
-		$params = array(":lim" => $limit);
+				ORDER BY s.date_time ASC";
+		$params = array();
 
 		return $this->query($sql, $params);
 	}
 
 	public function getNumTicketsAvailable($performance_id) {
+		return null;
 		$this_query_name = "#getNumTicketsAvailable";
 		if (!array_key_exists($this_query_name, $this->prepared_quieres)){
 			$sql = "SELECT COUNT(SELECT row_no FROM Seat)-COUNT(
