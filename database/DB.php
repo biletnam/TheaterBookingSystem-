@@ -95,7 +95,7 @@ class DB {
 	//make a more robust preset version below as a preset
 	//and if apprioprate use permenant prepared query.
 	public function query($sql, $params) {
-		if (!$this->connected) {die("must connect first 3");}
+		if (!$this->connected) {die("Could not execute $sql \n must connect first 3");}
 		$prepared_query = $this->conn->prepare($sql);
 		$prepared_query->execute($params);
 		return $prepared_query->fetchAll();
