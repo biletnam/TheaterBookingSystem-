@@ -25,7 +25,7 @@ $Template->pre_content();
 if (!isset($_GET["show"])){
 	$next_shows = $DB->getNextPerformances(50);
 	foreach ($next_shows as $show) {
-		$Template->display_performance($show);
+		$Template->display_performance($show, $DB);
 	}
 
 }//endif

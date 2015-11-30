@@ -156,7 +156,7 @@ class Template {
 			if ($next_performances){
 				foreach($next_performances as $show) {
 					$num_tickets = $DB->getNumTicketsAvailable($show['id']);
-					var_dump($num_tickets);
+					//var_dump($num_tickets);
 					$date = date('l, F jS o',strtotime(str_replace('-','/', $show['date_time'])));
 					$link = "shows.php?show=".$show['id'];
 					echo "<li><a href=\"$link\">$date</a></li>";
@@ -173,7 +173,7 @@ class Template {
 
 	//////////////////
 	// Show
-	function display_performance($performance) {
+	function display_performance($performance, $DB= null) {
 		$title = $performance['title'];
 		$date_time = str_replace('-','/', $performance['date_time']);
 		$id = $performance['id'];
@@ -191,5 +191,8 @@ class Template {
 			<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
 			<p>$desc</p>
 			</div>";
+
+		$tickets_available = $DB->getTicketsAvailable($id);
+		var_dump($tickets_available);
 	}
 }//end class template
