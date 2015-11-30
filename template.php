@@ -121,6 +121,21 @@ class Template {
 		return substr($text,0, $cut_on)."...";
 	}
 
+	private function writeTicketsAvailable($num_tickets){
+		if ($num_tickets == 0){
+			return "Sold Out!";
+		}
+		elseif ($num_tickets>50) {
+			return "Tickets are still available ($num_tickets).";
+		}
+		elseif ($num_tickets == 1) {
+			return "Only 1 ticket left.";
+		}
+		else{
+			return "Only $num_tickets tickts left.";
+		}
+	}
+
 	////////////////////////////////
 	// CONTENT SPECFIC FUNCTIONS
 	////////////////////////////////
@@ -155,11 +170,11 @@ class Template {
 			
 			if ($next_performances){
 				foreach($next_performances as $show) {
-					$num_tickets = $DB->getNumTicketsAvailable($show['id']);
+					$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($show['id'])));
 					//var_dump($num_tickets);
 					$date = date('l, F jS o',strtotime(str_replace('-','/', $show['date_time'])));
 					$link = "shows.php?show=".$show['id'];
-					echo "<li><a href=\"$link\">$date</a></li>";
+					echo "<li><a href=\"$link\">$date</a>, $num_tickets</li>";
 				}
 			}//end show listing
 
@@ -173,7 +188,7 @@ class Template {
 
 	//////////////////
 	// Show
-	function display_performance($performance, $DB= null) {
+	function display_performance($performance, $DB=null) {
 		$title = $performance['title'];
 		$date_time = str_replace('-','/', $performance['date_time']);
 		$id = $performance['id'];
@@ -184,17 +199,19 @@ class Template {
 		//process data
 		$heading = date('l, F jS o', strtotime($date_time))." ".$title;
 		$desc = $this->shortenText($description);
+		$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($id)));
 
 		//render data
+
 
 		echo "<div class=\"post show\">
 			<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
 			<p>$desc</p>
+			<p>$num_tickets</p>
 			</div>";
 
 		// $tickets_sold = $DB->getSoldTickets($id);
 		// var_dump($tickets_sold);
-		$tickets_available = $DB->getTicketsAvailable($id);
-		var_dump($tickets_available);
+
 	}
 }//end class template
