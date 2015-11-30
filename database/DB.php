@@ -196,11 +196,45 @@ class DB {
 		return $this->query($sql, $params);
 	}
 
-	public function getNumTicketsAvailable($performance_id) {
-		return null;
+	public function getTicketsAvailable($performance_id) {
 		$this_query_name = "#getNumTicketsAvailable";
 		if (!array_key_exists($this_query_name, $this->prepared_quieres)){
-			$sql = "SELECT COUNT(*) FROM (SELECT * FROM Booking JOIN ON)";
+			$sql = 
+	"SELECT 
+		s.row_no,
+		s.zone_name,
+		ROUND(z.price_multiplier *
+			(
+				SELECT
+					P.base_price
+				FROM
+					Production P 
+					JOIN Performance p
+						ON P.title = p.title
+				WHERE
+					p.id = :perfID
+			)
+			, 2) as price
+	FROM
+		Seat s
+		JOIN Zone z
+			ON s.zone_name = z.name
+	WHERE
+		s.row_no NOT IN 
+			(
+				SELECT 
+					s.row_no
+				FROM
+					Seat s
+					JOIN Booking b 
+						ON s.row_no = b.row_no
+				WHERE
+					b.performance_id = :perfID
+			)
+
+
+
+			";
 			//prepare
 			$this->makePreparedQuery($this_query_name, $sql);
 		}
@@ -210,7 +244,7 @@ class DB {
 	}
 
 	public function getSoldTickets($performance_id){
-		$this_query_name = "#getTicketsAvailable";
+		$this_query_name = "#getTicketsSold";
 		if (!array_key_exists($this_query_name, $this->prepared_quieres)){
 			$sql = 
     "SELECT 
