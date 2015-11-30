@@ -34,14 +34,14 @@ class DB {
 			if ($recreate_database_from_new) {
 				$this->dropDB();
 				$this->makeDB();
+				$this->selectDB();
 				$this->populateDB();
-				return $this->connect(FALSE);
+				$this->connect();
 			}
-			return TRUE;
 		}
 		catch (PDOException $e) {
 			echo "PDOException: ".$e->getMessage();
-			return FALSE;
+			$this->connected = FALSE;
 		}
 	}
 
@@ -52,10 +52,14 @@ class DB {
 	private function makeDB() {
 		$this->conn->query("CREATE DATABASE IF NOT EXISTS $this->dbname;");
 	}
+
+	private function selectDB() {
+		$this->conn->query("USE $this->dbname;");
+	}
 	
 	private function populateDB() {
 
-		if (!$this->connected) {die("must connect first");}
+		if (!$this->connected) {die("must connect first 4");}
 		$sql_files = array (
 		//ORDERING HERE MATTERS
 		//this is the order they will be executed in.
@@ -74,7 +78,7 @@ class DB {
 	}
 	
 	private function runSqlFile($filename) {
-		if (!$this->connected) {die("must connect first");}
+		if (!$this->connected) {die("must connect first 1");}
 		$file = file($filename);
 		foreach ($file as $line_num => $sql_command) {
 			$this->unsafe_query($sql_command);
@@ -82,7 +86,7 @@ class DB {
 	}
 	
 	private function unsafe_query($sql) {
-		if(!$this->connected) {die("must connect first");}
+		if(!$this->connected) {die("must connect first 2");}
 		return $this->conn->query($sql);
 		
 	}
@@ -91,7 +95,7 @@ class DB {
 	//make a more robust preset version below as a preset
 	//and if apprioprate use permenant prepared query.
 	public function query($sql, $params) {
-		if (!$this->connected) {die("must connect first");}
+		if (!$this->connected) {die("must connect first 3");}
 		$prepared_query = $this->conn->prepare($sql);
 		$prepared_query->execute($params);
 		return $prepared_query->fetchAll();
