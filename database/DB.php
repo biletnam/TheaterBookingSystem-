@@ -65,7 +65,8 @@ class DB {
 			"database/zone.sql",
 			"database/seat.sql",
 			"database/productions.sql",
-			"database/performances.sql"
+			"database/performances.sql",
+			"database/bookings.sql"
 		);
 		
 		foreach ($sql_files as $file) {
@@ -208,23 +209,38 @@ class DB {
 		return $this->executePreparedQuery($this_query_name, $params);
 	}
 
-	public function getTicketsAvailable($performance_id){
+	public function getSoldTickets($performance_id){
 		$this_query_name = "#getTicketsAvailable";
 		if (!array_key_exists($this_query_name, $this->prepared_quieres)){
-			$sql = "
-    SELECT S.row_no, S.area_name, 
-		(SELECT Production.basic_price 
-			FROM Production JOIN Performance 
-			ON Production.title = Performance.title
-			WHERE Production.id=:perfID) * 
-		(SELECT Z.price_multipler FROM Zone Z
-			JOIN Seat S on Zone.name = S.area_name
-			WHERE S.row_no = SOMETHING) as price,  
-	FROM Seat S 
-	  LEFT JOIN Booking B ON S.row_no = B.row_no 
-	WHERE S.row_no NOT IN (SELECT B.row_no 
-		FROM Booking B 
-		WHERE B.performance_id = :perfID);";
+			$sql = 
+    "SELECT 
+    	b.customer_name, 
+    	b.row_no, 
+    	s.zone_name, 
+    	ROUND(P.base_price * z.price_multiplier, 2) as ticket_price,
+    	p.title,
+    	p.date_time
+    FROM
+    	Seat s
+    	JOIN Booking b
+    		ON s.row_no = b.row_no
+    	JOIN Performance p
+    		ON p.id = b.performance_id
+    	JOIN Production P
+    		ON p.title = P.title
+    	JOIN Zone z
+    		ON z.name = s.zone_name
+    WHERE
+    	s.row_no IN 
+    		(
+    			SELECT 
+    				b.row_no 
+    			FROM 
+    				Booking b 
+    			WHERE 
+    				b.performance_id = :perfID
+    		)
+   	;";
 			//prepare
 			$this->makePreparedQuery($this_query_name, $sql);
 		}

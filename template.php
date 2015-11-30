@@ -192,7 +192,7 @@ class Template {
 			<p>$desc</p>
 			</div>";
 
-		$tickets_available = $DB->getTicketsAvailable($id);
+		$tickets_available = $DB->getSoldTickets($id);
 		var_dump($tickets_available);
 	}
 }//end class template
