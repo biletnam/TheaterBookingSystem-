@@ -22,8 +22,6 @@ $Template->pre_content();
 
 //NOW FOR THE CONTENT
 
-if (!isset($_GET["production"])){
-	?>
 <div class="post highlighted">
 <img src="images/logo.png" width="280" align="left">
 <h2>Welcome</h2>
@@ -37,12 +35,6 @@ $newest_productions = $DB->getNewestProductions();
 
 foreach ($newest_productions as $production) {
 	$Template->display_production($production, 0, FALSE);
-}
-
-}//endif
-
-else {
-	echo "your looking at a production";
 }
 
 //FINISH UP TEMPLATE
