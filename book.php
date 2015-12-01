@@ -22,7 +22,34 @@ $Template->pre_content();
 
 //NOW FOR THE CONTENT
 
-echo "<p>Bookings!HERE!!!</p>";
+function form($performance, $seats, $customer_name) {
+	$title = $performance['title'];
+	$dt = $performance['date_time'];
+	echo "<form action=\"book.php\">
+		Performance:<br>		
+		<b>$title on $dt</b><br>
+		Number of seats:<br>
+		<select value=\"sizeof($seats)\">";
+		
+	foreach (range(1,10) as $num){
+		echo "<option value=\"$num\">$num</option>";
+	}
+	echo "</select><br>";
+	
+	echo "<p>Here goes the code to choose the seats</p>";
+	
+	echo "Your Name:<br>
+		<input type=\"text\" value=\"$customer_name\">
+		<br><br>
+		<input type=\"submit\" value=\"Book\">
+		</form>";			
+		
+}
+
+$fp = array("title" => "fmae", "date_time" => "dt");
+$seats = NULL;
+$cn = "C";
+form($fp, $seats, $cn);
 
 
 //FINISH UP TEMPLATE
