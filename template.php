@@ -266,7 +266,7 @@ class Template {
 			<input type=\"hidden\" name=\"pid\" value=$pid>
 			<b>$title on $date_time</b><br>
 			Number of seats:<br>
-			<select>";
+			<select id=\"numseats\" onchange=\"write()\">";
 			
 		foreach (range(1,10) as $num){
 			$selected = "";
@@ -275,7 +275,15 @@ class Template {
 		}
 		echo "</select><br>";
 		
-		echo "<p>Here goes the code to choose the seats</p>";
+		echo "<script>";
+		
+		echo "function write(){
+				  var e = document.getElementByID(\"numseats\");
+				  var num = e.options[e.selecetedIndex].value;
+				  document.write(num);
+}";
+		
+		echo "</script>";
 		
 		echo "Your Name:<br>
 			<input type=\"text\" value=\"$customer_name\">
