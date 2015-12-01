@@ -81,6 +81,10 @@ class DB {
 		$this->unsafe_query($sql);
 	}
 	
+	////////////////
+	//QUERY FUNCTIONS
+	////////////////
+	
 	private function unsafe_query($sql) {
 		if(!$this->connected) {die("Cannot Run Unprepared Query: Not Connected");}
 		return $this->conn->query($sql);

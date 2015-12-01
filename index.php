@@ -21,7 +21,7 @@ $Template = new Template($page_title, $page_description, $current_page);
 $Template->pre_content();
 
 //NOW FOR THE CONTENT
-
+?>
 <div class="post highlighted">
 <img src="images/logo.png" width="280" align="left">
 <h2>Welcome</h2>
