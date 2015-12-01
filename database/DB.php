@@ -199,6 +199,25 @@ class DB {
 
 		return $this->query($sql, $params);
 	}
+	
+	public function getPerformance($pid){
+		//check if it's already been prepared
+		$this_query_name = "#getPerformances";
+		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
+			$sql = "SELECT p.*, P.*
+				FROM Performance p
+				JOIN Production P
+					ON p.title = P.title
+				WHERE 
+					p.id = :pid";
+			//prepare
+			$this->makePreparedQuery($this_query_name, $sql);
+		}
+		//build the params		
+		$params = array(":pid" => $pid);
+		//return the results
+		return $this->executePreparedQuery($this_query_name, $params);		
+	}
 
 	public function getTicketsAvailable($performance_id) {
 		$this_query_name = "#getNumTicketsAvailable";

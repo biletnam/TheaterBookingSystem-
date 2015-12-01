@@ -22,35 +22,39 @@ $Template->pre_content();
 
 //NOW FOR THE CONTENT
 
-function form($performance, $seats, $customer_name) {
-	$title = $performance['title'];
-	$dt = $performance['date_time'];
-	echo "<form action=\"book.php\">
-		Performance:<br>		
-		<b>$title on $dt</b><br>
-		Number of seats:<br>
-		<select value=\"sizeof($seats)\">";
-		
-	foreach (range(1,10) as $num){
-		echo "<option value=\"$num\">$num</option>";
+function var_from_POST_or_GET($var_name){
+	if (isset($_POST[$var_name])){
+		return $_POST[$var_name];
 	}
-	echo "</select><br>";
-	
-	echo "<p>Here goes the code to choose the seats</p>";
-	
-	echo "Your Name:<br>
-		<input type=\"text\" value=\"$customer_name\">
-		<br><br>
-		<input type=\"submit\" value=\"Book\">
-		</form>";			
-		
+	elseif (isset($_GET[$var_name])){
+		return $_GET[$var_name];
+	}
+	else {
+		return NULL;
+	}
 }
-
-$fp = array("title" => "fmae", "date_time" => "dt");
-$seats = NULL;
-$cn = "C";
-form($fp, $seats, $cn);
-
+$pid = intval(var_from_POST_or_GET('pid'));
+if ($pid != NULL) {
+	$performance = $DB->getPerformance($pid);
+	if (isset($_POST['numseats'])) {
+		$num_seats = intval($_POST['numseats']);
+		$seats = array();
+		foreach ($range(1,$numseats) as $i){
+			array_push($_POST["seat$i"]);
+		}
+		
+		$cn = var_from_POST_or_GET('cn');
+		
+		$Template->process_booking_form($performance[0], $seats, $cn, $DB);
+	}
+	else {
+		$Template->display_booking_form($performance[0]);
+	}
+	
+}
+else {
+	echo "<p>To make a booking please, go to the upcoming performances page and choose which show you would like to book.</p>";
+}
 
 //FINISH UP TEMPLATE
 $Template->post_content();

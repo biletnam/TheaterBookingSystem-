@@ -214,4 +214,74 @@ class Template {
 		// var_dump($tickets_sold);
 
 	}
+	
+	function process_booking_form($performance, $seats, $customer_name, $DB){
+		$has_error = FALSE;
+		$error_messages = array();
+		try {
+			$available_seats = $DB->getTicketsAvailable(intval($performance['id']));
+			$available_seat_row_nos = array();
+			foreach ($available_seats as $a) {
+				array_push($available_seat_row_nos, $a['row_no']);
+			}
+			foreach ($seats as $seat) {
+				if (!in_array($seat, $available_seats)){
+					$has_error = TRUE;
+					$e_name = 'seats_error';
+					if (array_key_exists($e_name)){
+						$error_messages[$e_name] = "Error: Seat Unavailable ($seat)";
+					}
+					else {
+						$error_messages[$e_name] .= "($seat)";
+					}
+				}
+				echo "loop";
+			}
+		}
+		catch (Exception $ex){
+			echo "Could not get available seats";
+			$has_error = TRUE;
+		}
+		
+		if ($has_error){
+			$this->display_booking_form($performance, $seats, $customer_name, $error_messages);
+		}
+		else {
+			//here we actually book the seats
+			echo "Some seats it appears could be booked. still to implement";
+		}
+		
+	}
+	
+	function display_booking_form($performance, $seats = array(), $customer_name = '', $error_messages = array()) {
+		//pre-process the data
+		$title = $performance['title'];
+		$date_time = $performance['date_time'];
+		$pid = $performance['id'];
+		$num_seats = sizeof($seats);
+		if ($num_seats==0) {$num_seats = 2;}
+		
+		echo "<form action=\"book.php\">
+			Performance:<br>
+			<input type=\"hidden\" name=\"pid\" value=$pid>
+			<b>$title on $date_time</b><br>
+			Number of seats:<br>
+			<select>";
+			
+		foreach (range(1,10) as $num){
+			$selected = "";
+			if ($num == $num_seats) $selected = " selected";
+			echo "<option value=\"$num\"$selected>$num</option>\n";
+		}
+		echo "</select><br>";
+		
+		echo "<p>Here goes the code to choose the seats</p>";
+		
+		echo "Your Name:<br>
+			<input type=\"text\" value=\"$customer_name\">
+			<br><br>
+			<input type=\"submit\" value=\"Book\">
+			</form>";			
+			
+	} 
 }//end class template
