@@ -260,7 +260,17 @@ class DB {
 		}
 		$params = array(":perfID" => $performance_id);
 
-		return $this->executePreparedQuery($this_query_name, $params);
+		$raw = $this->executePreparedQuery($this_query_name, $params);
+		
+		$results = array();
+		foreach ($raw as $seat){
+			$row_no = $seat["row_no"];
+			$zone = $seat["zone_name"];
+			$price = $seat["price"];
+			
+			$results[$row_no] = array("zone" => $zone, "price" => $price);
+		}
+		return $results;
 	}
 
 	public function getSoldTickets($performance_id){
@@ -302,5 +312,16 @@ class DB {
 
 		return $this->executePreparedQuery($this_query_name, $params);
 
+	}
+	
+	public function getAllSeats(){
+		$sql = "SELECT row_no FROM Seat;";
+		return $this->unsafe_query($sql);
+		
+	}
+	
+	public function getFilledSeats($perfid){
+		$sql = "SELECT row_no from Booking WHERE performance_id = :pid;";
+		return $this->query($sql, array(":pid" => $perfid));
 	}
 }?>

@@ -136,3 +136,11 @@ h1 {
 .highlighted {
 	background-color: #e5e5ff;
 }
+
+.available {
+	border: 1px solid green;
+}
+
+.booked {
+	background-color: LightSlateGray ;
+}

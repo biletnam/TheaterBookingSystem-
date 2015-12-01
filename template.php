@@ -176,6 +176,8 @@ class Template {
 					$link = "shows.php?show=".$show['id'];
 					echo "<li><a href=\"$link\">$date</a>, $num_tickets</li>";
 				}
+			
+			echo "</ul>";
 			}//end show listing
 
 		if ($show_gallery){
@@ -244,7 +246,7 @@ class Template {
 		}
 		
 		if ($has_error){
-			$this->display_booking_form($performance, $seats, $customer_name, $error_messages);
+			$this->display_booking_form($DB, $performance, $seats, $customer_name, $error_messages);
 		}
 		else {
 			//here we actually book the seats
@@ -253,7 +255,7 @@ class Template {
 		
 	}
 	
-	function display_booking_form($performance, $seats = array(), $customer_name = '', $error_messages = array()) {
+	function display_booking_form($DB, $performance, $seats = array(), $customer_name = '', $error_messages = array()) {
 		//pre-process the data
 		$title = $performance['title'];
 		$date_time = $performance['date_time'];
@@ -264,26 +266,11 @@ class Template {
 		echo "<form action=\"book.php\">
 			Performance:<br>
 			<input type=\"hidden\" name=\"pid\" value=$pid>
-			<b>$title on $date_time</b><br>
-			Number of seats:<br>
-			<select id=\"numseats\" onchange=\"write()\">";
+			<b>$title on $date_time</b><br>";
 			
-		foreach (range(1,10) as $num){
-			$selected = "";
-			if ($num == $num_seats) $selected = " selected";
-			echo "<option value=\"$num\"$selected>$num</option>\n";
-		}
 		echo "</select><br>";
 		
-		echo "<script>";
-		
-		echo "function write(){
-				  var e = document.getElementByID(\"numseats\");
-				  var num = e.options[e.selecetedIndex].value;
-				  document.write(num);
-}";
-		
-		echo "</script>";
+		$this->ticket_selection($pid, $DB);
 		
 		echo "Your Name:<br>
 			<input type=\"text\" value=\"$customer_name\">
@@ -291,5 +278,37 @@ class Template {
 			<input type=\"submit\" value=\"Book\">
 			</form>";			
 			
-	} 
+	}
+	
+	function ticket_selection($pid, $DB){
+		$avail = $DB->getTicketsAvailable($pid);
+		$rows = str_split("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+		$nos = range(1,20);
+				
+		echo "<table>";
+		foreach ($rows as $row){
+			echo "<tr>";
+			
+				foreach ($nos as $no) {
+					$no = str_pad($no, 2, "0", STR_PAD_LEFT);
+					$row_no = $row.$no;					
+						if (array_key_exists($row_no, $avail)){
+							$price = $avail[$row_no]["price"];
+							$zone = $avail[$row_no]["zone"];
+							
+							echo "<td class=\"available $zone\">";
+							echo $row_no."<br>$".$price;
+						}
+						else {
+							echo "<td class=\"booked\">";
+							echo "X";
+						}
+					
+					echo "</td>";
+				}
+			
+			echo "</tr>";
+		}
+		echo "</table>";
+	}
 }//end class template

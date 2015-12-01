@@ -48,7 +48,7 @@ if ($pid != NULL) {
 		$Template->process_booking_form($performance[0], $seats, $cn, $DB);
 	}
 	else {
-		$Template->display_booking_form($performance[0]);
+		$Template->display_booking_form($DB, $performance[0]);
 	}
 	
 }
