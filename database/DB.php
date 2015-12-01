@@ -231,9 +231,6 @@ class DB {
 				WHERE
 					b.performance_id = :perfID
 			)
-
-
-
 			";
 			//prepare
 			$this->makePreparedQuery($this_query_name, $sql);
