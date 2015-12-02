@@ -31,7 +31,9 @@ if (!isset($_GET["show"])){
 }//endif
 
 else {
-	echo "this show";
+	$pid = intval($_GET["show"]);
+	$performance = $DB->getPerformance($pid);
+	$Template->display_performance($performance[0], $DB, TRUE);
 }
 
 //FINISH UP TEMPLATE

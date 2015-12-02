@@ -140,6 +140,12 @@ class Template {
 	// CONTENT SPECFIC FUNCTIONS
 	////////////////////////////////
 
+	function showGallery($title){
+		foreach (range(1,4) as $i){
+			echo "<image src=\"images/$title/$i.jpg\" class=\"gallery\" width=\"450px\" alt=\"Look at some wonderful photos of $title\">";
+		}
+	}
+
 	//////////////////////////
 	//Production
 	function display_production($production, $num_shows_to_display, $show_gallery, $DB=NULL) {
@@ -181,7 +187,7 @@ class Template {
 			}//end show listing
 
 		if ($show_gallery){
-			echo "<p>A very pretty gallery</p>";
+			$this->showGallery($title);
 		}//end gallery
 		}
 		echo "
@@ -190,7 +196,7 @@ class Template {
 
 	//////////////////
 	// Show
-	function display_performance($performance, $DB=null) {
+	function display_performance($performance, $DB=null, $LONG = FALSE) {
 		$title = $performance['title'];
 		$date_time = str_replace('-','/', $performance['date_time']);
 		$id = $performance['id'];
@@ -200,18 +206,32 @@ class Template {
 
 		//process data
 		$heading = date('l, F jS o', strtotime($date_time))." ".$title;
-		$desc = $this->shortenText($description);
 		$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($id)));
-		//TODO give this a query that works the way it ex[ects]
-		//render data
+		
+		if (!$LONG){
+			$desc = $this->shortenText($description);
+			
+			//TODO give this a query that works the way it ex[ects]
+			//render data
 
 
-		echo "<div class=\"post show\">
-			<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
-			<p>$desc</p>
-			<p>$num_tickets</p>
-			<p><a href=\"book.php?pid=$id\">Book Now!</a></p>
-			</div>";
+			echo "<div class=\"post show\">
+				<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
+				<p>$desc</p>
+				<p>$num_tickets</p>
+				<p><a href=\"book.php?pid=$id\">Book Now!</a></p>
+				</div>";
+		}
+		else {
+			echo "<div class=\"post show\">
+				<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
+				<p>$description</p>
+				<p>$num_tickets</p>
+				<p><a href=\"book.php?pid=$id\">Book Now!</a></p>";
+
+			$this->showGallery($title);
+			echo "</div>";
+		}
 
 
 	}
