@@ -202,7 +202,7 @@ class Template {
 		$heading = date('l, F jS o', strtotime($date_time))." ".$title;
 		$desc = $this->shortenText($description);
 		$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($id)));
-
+		//TODO give this a query that works the way it ex[ects]
 		//render data
 
 
@@ -267,8 +267,6 @@ class Template {
 			Performance:<br>
 			<input type=\"hidden\" name=\"pid\" value=$pid>
 			<b>$title on $date_time</b><br>";
-			
-		echo "</select><br>";
 		
 		$this->ticket_selection($pid, $DB);
 		
@@ -281,34 +279,32 @@ class Template {
 	}
 	
 	function ticket_selection($pid, $DB){
-		$avail = $DB->getTicketsAvailable($pid);
-		$rows = str_split("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+		$avail = $DB->getTicketsAvailableByZone($pid);
 		$nos = range(1,20);
-				
-		echo "<table>";
-		foreach ($rows as $row){
-			echo "<tr>";
-			
-				foreach ($nos as $no) {
-					$no = str_pad($no, 2, "0", STR_PAD_LEFT);
-					$row_no = $row.$no;					
-						if (array_key_exists($row_no, $avail)){
-							$price = $avail[$row_no]["price"];
-							$zone = $avail[$row_no]["zone"];
-							
-							echo "<td class=\"available $zone\">";
-							echo $row_no."<br>$".$price;
-						}
-						else {
-							echo "<td class=\"booked\">";
-							echo "X";
-						}
+		foreach ($avail as $zone => $zone_info) {
+			$price = $zone_info["price"];
+			echo "<h3>$zone - &pound$price</h3>";
+			echo "<table>";
+			foreach ($zone_info["rows"] as $row => $seats){
+				echo "<tr><td>$row</td>";
+				foreach ($seats as $no => $seat_is_available) {
+					if ($seat_is_available){
+						$row_no = $row.$no;	
+						echo "<td class=\"available\">";
+						echo "<input type=\"checkbox\" name=\"seat\" value=\"$row_no\">";
+						//echo $row_no."<br>$".$price;
+					}
+					else {
+						echo "<td class=\"booked\">";
+						echo "X";
+					}
 					
 					echo "</td>";
 				}
-			
-			echo "</tr>";
+				
+				echo "</tr>";
+			}
+			echo "</table>";
 		}
-		echo "</table>";
 	}
 }//end class template

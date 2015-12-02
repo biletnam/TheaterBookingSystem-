@@ -254,6 +254,8 @@ class DB {
 				WHERE
 					b.performance_id = :perfID
 			)
+	ORDER BY
+		CHAR_LENGTH(s.zone_name) DESC, price ASC
 			";
 			//prepare
 			$this->makePreparedQuery($this_query_name, $sql);
@@ -262,20 +264,43 @@ class DB {
 
 		$raw = $this->executePreparedQuery($this_query_name, $params);
 		
+		//process teh results for the form
+		
+		
+		return $raw;
+	}
+
+	public function getTicketsAvailableByZone($perfid){
+		$raw = $this->getTicketsAvailable($perfid);
 		$results = array();
 		foreach ($raw as $seat){
 			$row_no = $seat["row_no"];
+			$row = substr($row_no, 0,1);
+			$no = substr($row_no, 1);
 			$zone = $seat["zone_name"];
 			$price = $seat["price"];
 			
-			$results[$row_no] = array("zone" => $zone, "price" => $price);
+			if (!array_key_exists($zone, $results)){
+				//if new zone
+				$results[$zone] = array("rows" => array(), "price" => $price);
+			}
+			if (!array_key_exists($row, $results[$zone]["rows"])) {
+				//if new row
+				$results[$zone]["rows"][$row] = array();
+				foreach (range(1,20) as $n){
+					$results[$zone]["rows"][$row][$n]=FALSE;
+				}
+			}
+			//add seat_no
+			$results[$zone]["rows"][$row][intval($no)]=TRUE;
+			
 		}
 		return $results;
 	}
 
 	public function getSoldTickets($performance_id){
 		$this_query_name = "#getTicketsSold";
-		if (!array_key_exists($this_query_name, $this->prepared_quieres)){
+		if (!array_key_exists($this_query_name, $this->prepared_quieres) ){
 			$sql = 
     "SELECT 
     	b.customer_name, 

@@ -8,7 +8,11 @@ booked = set()
 
 out = open("bookings.sql", 'w')
 
-while len(booked)<400:
+total_seats_avaiable = len(performance_ids) * len(seats)
+
+
+
+while len(booked)<(total_seats_avaiable/2):
 	name = choice(names)
 	seat = choice(seats)
 	pid = choice(performance_ids)
