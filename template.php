@@ -170,11 +170,12 @@ class Template {
 			
 			if ($next_performances){
 				foreach($next_performances as $show) {
-					$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($show['id'])));
+					$pid = $show['id'];
+					$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($pid)));
 					//var_dump($num_tickets);
 					$date = date('l, F jS o',strtotime(str_replace('-','/', $show['date_time'])));
 					$link = "shows.php?show=".$show['id'];
-					echo "<li><a href=\"$link\">$date</a>, $num_tickets</li>";
+					echo "<li><a href=\"$link\">$date</a>, $num_tickets, <a href=\"book.php?pid=$pid\">Book Now!</a></li>";
 				}
 			
 			echo "</ul>";
@@ -210,6 +211,7 @@ class Template {
 			<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
 			<p>$desc</p>
 			<p>$num_tickets</p>
+			<p><a href=\"book.php?pid=$id\">Book Now!</a></p>
 			</div>";
 
 		// $tickets_sold = $DB->getSoldTickets($id);
@@ -263,7 +265,7 @@ class Template {
 		$num_seats = sizeof($seats);
 		if ($num_seats==0) {$num_seats = 2;}
 		
-		echo "<form action=\"book.php\">
+		echo "<form action=\"book.php\" method=\"POST\">
 			Performance:<br>
 			<input type=\"hidden\" name=\"pid\" value=$pid>
 			<b>$title on $date_time</b><br>";
@@ -291,7 +293,7 @@ class Template {
 					if ($seat_is_available){
 						$row_no = $row.$no;	
 						echo "<td class=\"available\">";
-						echo "<input type=\"checkbox\" name=\"seat\" value=\"$row_no\">";
+						echo "<input type=\"checkbox\" name=\"$row_no\" value=\"1\">";
 						//echo $row_no."<br>$".$price;
 					}
 					else {

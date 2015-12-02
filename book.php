@@ -22,6 +22,9 @@ $Template->pre_content();
 
 //NOW FOR THE CONTENT
 
+
+var_dump($_POST);
+
 function var_from_POST_or_GET($var_name){
 	if (isset($_POST[$var_name])){
 		return $_POST[$var_name];
