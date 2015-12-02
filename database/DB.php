@@ -390,18 +390,18 @@ class DB {
 		return TRUE;
 	}
 
-	public function bookSeats($pid, $seats, $name){
+	public function bookSeats($pid, $seats, $name, $email){
 		//check if it's already been prepared
 		$this_query_name = "#BookSeats";
 		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
-			$sql = "INSERT into Booking values (NULL, :rn, :pid,  :name);";
+			$sql = "INSERT into Booking values (NULL, :rn, :pid,  :name, :e);";
 			//prepare
 			$this->makePreparedQuery($this_query_name, $sql);
 		}
 		//
 		$all_fine = TRUE;
 		foreach ($seats as $i => $row_no) {
-				$params = array(":pid" => $pid, ":rn" => $row_no, ':name' => $name);
+				$params = array(":pid" => $pid, ":rn" => $row_no, ':name' => $name, ':e' => $email);
 				try {
 					$this->executePreparedQuery($this_query_name, $params, FALSE);
 				}
@@ -411,5 +411,23 @@ class DB {
 				}
 			}
 		return $all_fine;
+	}
+
+	public function seatExists($row_no, $zone_name){
+		//check if it's already been prepared
+		$this_query_name = "#seatExists";
+		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
+			$sql = "SELECT * FROM Seat WHERE row_no = :r AND zone_name = :z";
+			//prepare
+			$this->makePreparedQuery($this_query_name, $sql);
+		}
+		//build the params		
+		$params = array(":r" => $row_no, ":z" => $zone_name);
+		//return the results
+		$results = $this->executePreparedQuery($this_query_name, $params);
+		if (sizeof($results) == 0){
+			return FALSE;
+		}
+		return TRUE;		
 	}
 }?>

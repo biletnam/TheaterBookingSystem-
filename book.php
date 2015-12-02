@@ -47,7 +47,11 @@ elseif (isset($_POST['pid'])){
 	if (isset($_POST['customer_name'])){
 		$customer_name = $_POST['customer_name'];
 	}
-	$Template->process_booking_form($performance[0], $selected_seats, $customer_name, $DB);
+	$email = NULL;
+	if (isset($_POST['email'])){
+		$email = $_POST['email'];
+	}
+	$Template->process_booking_form($performance[0], $selected_seats, $customer_name, $email, $DB);
 }
 else {
 	//////////////////
