@@ -24,7 +24,7 @@ $Template->pre_content();
 
 if (isset($_GET['pid'])){
 	//////////////////
-	//it was a get reqest, we should display the booking form
+	//it was a get reqest for a booking, we should display the booking form
 	//////////////////
 	$performance = $DB->getPerformance(intval($_GET['pid']));
 	$Template->display_booking_form($DB,$performance[0]);
@@ -51,7 +51,7 @@ elseif (isset($_POST['pid'])){
 }
 else {
 	//////////////////
-	//no performance selected, display performances.
+	//no performance selected, display all performances.
 	//////////////////
 	echo "
 	<div class=\"post highlighted\">

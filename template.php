@@ -316,7 +316,7 @@ class Template {
 
 						$row_no = $row.str_pad($no, 2, "0", STR_PAD_LEFT);
 						$checked = "";
-						if (array_key_exists($row_no,$selected_seats)){$checked = " checked";}
+						if (in_array($row_no,$selected_seats)){$checked = " checked";}
 						echo "<td class=\"booking available\">";
 						echo "<input type=\"checkbox\" name=\"$row_no\" value=\"1\" $checked>";
 						echo "</td>";
@@ -347,7 +347,7 @@ class Template {
 		</div>";
 		$next_shows = $DB->getNextPerformances(50);
 		foreach ($next_shows as $show) {
-			$Template->display_performance($show, $DB);
+			$this->display_performance($show, $DB);
 		}
 	}
 
