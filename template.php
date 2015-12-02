@@ -284,20 +284,22 @@ class Template {
 		$avail = $DB->getTicketsAvailableByZone($pid);
 		$nos = range(1,20);
 		foreach ($avail as $zone => $zone_info) {
+			$zone = ucwords($zone);
 			$price = $zone_info["price"];
-			echo "<h3>$zone - &pound$price</h3>";
+			echo "<h3>$zone - &pound;$price</h3>";
 			echo "<table>";
+			ksort($zone_info["rows"]);
 			foreach ($zone_info["rows"] as $row => $seats){
-				echo "<tr><td>$row</td>";
+				echo "<tr><td class=\"row-identifier\">$row</td>";
 				foreach ($seats as $no => $seat_is_available) {
 					if ($seat_is_available){
 						$row_no = $row.$no;	
-						echo "<td class=\"available\">";
+						echo "<td class=\"booking available\">";
 						echo "<input type=\"checkbox\" name=\"$row_no\" value=\"1\">";
 						//echo $row_no."<br>$".$price;
 					}
 					else {
-						echo "<td class=\"booked\">";
+						echo "<td class=\"booking booked\">";
 						echo "X";
 					}
 					

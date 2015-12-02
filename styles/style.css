@@ -137,10 +137,23 @@ h1 {
 	background-color: #e5e5ff;
 }
 
+.booking {
+    width: 30px;
+    border: 1px solid;
+    text-align: center;
+}
+
 .available {
-	border: 1px solid green;
+	border-color: green;
 }
 
 .booked {
 	background-color: LightSlateGray ;
+    
+    color: DarkGrey;
+    border-color: #993300;
+}
+
+.row-identifier {
+    width: 15px;
 }
