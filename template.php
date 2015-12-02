@@ -286,7 +286,9 @@ class Template {
 		foreach ($avail as $zone => $zone_info) {
 			$zone = ucwords($zone);
 			$price = $zone_info["price"];
+			$description = $zone_info["description"];
 			echo "<h3>$zone - &pound;$price</h3>";
+			echo "<p>$description</p>";
 			echo "<table>";
 			ksort($zone_info["rows"]);
 			foreach ($zone_info["rows"] as $row => $seats){

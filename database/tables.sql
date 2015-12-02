@@ -1,6 +1,7 @@
     CREATE TABLE Zone(
     	name char(12) not null, 
     	price_multiplier float not null default 1.0, 
+        description text,
     	primary key (name)
     	);
 

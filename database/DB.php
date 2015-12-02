@@ -226,6 +226,7 @@ class DB {
 	"SELECT 
 		s.row_no,
 		s.zone_name,
+		z.description,
 		ROUND(z.price_multiplier *
 			(
 				SELECT
@@ -279,10 +280,13 @@ class DB {
 			$no = substr($row_no, 1);
 			$zone = $seat["zone_name"];
 			$price = $seat["price"];
+			$description = $seat["description"];
 			
 			if (!array_key_exists($zone, $results)){
 				//if new zone
-				$results[$zone] = array("rows" => array(), "price" => $price);
+				$results[$zone] = array("rows" => array(),
+										"price" => $price,
+										"description" => $description);
 			}
 			if (!array_key_exists($row, $results[$zone]["rows"])) {
 				//if new row
