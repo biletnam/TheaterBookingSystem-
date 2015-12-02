@@ -39,7 +39,7 @@ class Template {
 	private function heading() {
 		echo "<div id=\"wrapper\">
 				<div id=\"header\">
-					<h1><a href=\"\">Caspar's Theatre</a></h1>
+					<h1><a href=\"/\">Caspar's Theatre</a></h1>
 					<p>The beginning of something beautiful...</p>
 				</div>
 				<div style=\"clear: both;\"></div>";
@@ -172,7 +172,6 @@ class Template {
 				foreach($next_performances as $show) {
 					$pid = $show['id'];
 					$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($pid)));
-					//var_dump($num_tickets);
 					$date = date('l, F jS o',strtotime(str_replace('-','/', $show['date_time'])));
 					$link = "shows.php?show=".$show['id'];
 					echo "<li><a href=\"$link\">$date</a>, $num_tickets, <a href=\"book.php?pid=$pid\">Book Now!</a></li>";
@@ -214,45 +213,40 @@ class Template {
 			<p><a href=\"book.php?pid=$id\">Book Now!</a></p>
 			</div>";
 
-		// $tickets_sold = $DB->getSoldTickets($id);
-		// var_dump($tickets_sold);
 
 	}
-	
+
+	////////////////////////////////
+	// BOOKING FORM TEMPLATES
+	////////////////////////////////
+
 	function process_booking_form($performance, $seats, $customer_name, $DB){
+		//Takes in booking information. If this information is blank
 		$has_error = FALSE;
-		$error_messages = array();
-		try {
-			$available_seats = $DB->getTicketsAvailable(intval($performance['id']));
-			$available_seat_row_nos = array();
-			foreach ($available_seats as $a) {
-				array_push($available_seat_row_nos, $a['row_no']);
-			}
-			foreach ($seats as $seat) {
-				if (!in_array($seat, $available_seats)){
-					$has_error = TRUE;
-					$e_name = 'seats_error';
-					if (array_key_exists($e_name)){
-						$error_messages[$e_name] = "Error: Seat Unavailable ($seat)";
-					}
-					else {
-						$error_messages[$e_name] .= "($seat)";
-					}
-				}
-				echo "loop";
-			}
-		}
-		catch (Exception $ex){
-			echo "Could not get available seats";
+		$error_messages = "";
+		if ($customer_name == NULL){
 			$has_error = TRUE;
+			$error_messages.="Please provide a name for the booking. ";
 		}
-		
-		if ($has_error){
+		foreach ($seats as $seat){
+			if ($DB->seatBooked(intval($performance['id']), $seat)){
+				$has_error = TRUE;
+				$error_messages .= "Error: Seat ($seat) Unavailable. ";
+			}
+		}
+				
+		if ($has_error || sizeof($seats)<1){
 			$this->display_booking_form($DB, $performance, $seats, $customer_name, $error_messages);
 		}
 		else {
 			//here we actually book the seats
-			echo "Some seats it appears could be booked. still to implement";
+			$success = $DB->bookSeats(intval($performance['id']), $seats, $customer_name);
+			if ($success){
+				$this->booking_success($DB, $customer_name);
+			}
+			else{
+				$this->booking_fail($DB);
+			}
 		}
 		
 	}
@@ -262,25 +256,29 @@ class Template {
 		$title = $performance['title'];
 		$date_time = $performance['date_time'];
 		$pid = $performance['id'];
-		$num_seats = sizeof($seats);
-		if ($num_seats==0) {$num_seats = 2;}
 		
 		echo "<form action=\"book.php\" method=\"POST\">
 			Performance:<br>
 			<input type=\"hidden\" name=\"pid\" value=$pid>
 			<b>$title on $date_time</b><br>";
+		if ($error_messages){
+			echo "<p>$error_messages</p>";
+		}
 		
-		$this->ticket_selection($pid, $DB);
+		$this->ticket_selection($pid, $DB, $seats);
 		
 		echo "Your Name:<br>
-			<input type=\"text\" value=\"$customer_name\">
+			<input type=\"text\" name=\"customer_name\" value=\"$customer_name\">
 			<br><br>
 			<input type=\"submit\" value=\"Book\">
 			</form>";			
 			
 	}
+
+	///////////
+	//for use within the dispay booking form
 	
-	function ticket_selection($pid, $DB){
+	private function ticket_selection($pid, $DB, $selected_seats = array()){
 		$avail = $DB->getTicketsAvailableByZone($pid);
 		$nos = range(1,20);
 		foreach ($avail as $zone => $zone_info) {
@@ -295,14 +293,19 @@ class Template {
 				echo "<tr><td class=\"row-identifier\">$row</td>";
 				foreach ($seats as $no => $seat_is_available) {
 					if ($seat_is_available){
-						$row_no = $row.$no;	
+
+						$row_no = $row.str_pad($no, 2, "0", STR_PAD_LEFT);
+						$checked = "";
+						if (array_key_exists($row_no,$selected_seats)){$checked = " checked";}
 						echo "<td class=\"booking available\">";
-						echo "<input type=\"checkbox\" name=\"$row_no\" value=\"1\">";
+						echo "<input type=\"checkbox\" name=\"$row_no\" value=\"1\" $checked>";
+						echo "</td>";
 						//echo $row_no."<br>$".$price;
 					}
 					else {
 						echo "<td class=\"booking booked\">";
 						echo "X";
+						echo "</td>";
 					}
 					
 					echo "</td>";
@@ -311,6 +314,33 @@ class Template {
 				echo "</tr>";
 			}
 			echo "</table>";
+		}
+	}
+
+	private function booking_success($DB, $name){
+		echo "
+		<div class=\"post highlighted\">
+		<img src=\"images/logo.png\" height=\"100\" align=\"left\">
+		<h2>Thanks $name, Your booking has been made</h2>
+		<p>Your booking has been successful! Thanks you'll have a wonderful time we know we will ;)</p>
+		<p>Please book another show with us below</p>
+		</div>";
+		$next_shows = $DB->getNextPerformances(50);
+		foreach ($next_shows as $show) {
+			$Template->display_performance($show, $DB);
+		}
+	}
+
+		private function booking_fail($DB){
+		echo "
+		<div class=\"post highlighted\">
+		<img src=\"images/logo.png\" height=\"100\" align=\"left\">
+		<h2>BOOO!! your booking was not successful</h2>
+		<p>We're sorry, please contact us by telephone to figure this out with us.</p>
+		</div>";
+		$next_shows = $DB->getNextPerformances(50);
+		foreach ($next_shows as $show) {
+			$Template->display_performance($show, $DB);
 		}
 	}
 }//end class template

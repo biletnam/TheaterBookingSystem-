@@ -22,41 +22,47 @@ $Template->pre_content();
 
 //NOW FOR THE CONTENT
 
-
-var_dump($_POST);
-
-function var_from_POST_or_GET($var_name){
-	if (isset($_POST[$var_name])){
-		return $_POST[$var_name];
-	}
-	elseif (isset($_GET[$var_name])){
-		return $_GET[$var_name];
-	}
-	else {
-		return NULL;
-	}
+if (isset($_GET['pid'])){
+	//////////////////
+	//it was a get reqest, we should display the booking form
+	//////////////////
+	$performance = $DB->getPerformance(intval($_GET['pid']));
+	$Template->display_booking_form($DB,$performance[0]);
 }
-$pid = intval(var_from_POST_or_GET('pid'));
-if ($pid != NULL) {
-	$performance = $DB->getPerformance($pid);
-	if (isset($_POST['numseats'])) {
-		$num_seats = intval($_POST['numseats']);
-		$seats = array();
-		foreach ($range(1,$numseats) as $i){
-			array_push($_POST["seat$i"]);
+elseif (isset($_POST['pid'])){
+	//////////////////
+	//it was a post request, we should process the data
+	//////////////////
+	$performance = $DB->getPerformance(intval($_POST['pid']));
+	$all_seats = $DB->getAllSeats();
+	$selected_seats = array();
+	foreach ($all_seats as $i => $row_no){
+		if (isset($_POST[$row_no])){
+			if ($_POST[$row_no] == "1"){
+				array_push($selected_seats, $row_no);
+			}
 		}
-		
-		$cn = var_from_POST_or_GET('cn');
-		
-		$Template->process_booking_form($performance[0], $seats, $cn, $DB);
 	}
-	else {
-		$Template->display_booking_form($DB, $performance[0]);
+	$customer_name = NULL;
+	if (isset($_POST['customer_name'])){
+		$customer_name = $_POST['customer_name'];
 	}
-	
+	$Template->process_booking_form($performance[0], $selected_seats, $customer_name, $DB);
 }
 else {
-	echo "<p>To make a booking please, go to the upcoming performances page and choose which show you would like to book.</p>";
+	//////////////////
+	//no performance selected, display performances.
+	//////////////////
+	echo "
+	<div class=\"post highlighted\">
+	<img src=\"images/logo.png\" height=\"100\" align=\"left\">
+	<h2>Bookings</h2>
+	<p>To make a booking please choose one of the shows below, and click Book Now!</p>
+	</div>";
+	$next_shows = $DB->getNextPerformances(50);
+	foreach ($next_shows as $show) {
+		$Template->display_performance($show, $DB);
+	}
 }
 
 //FINISH UP TEMPLATE

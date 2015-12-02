@@ -87,7 +87,7 @@ class DB {
 	
 	private function unsafe_query($sql) {
 		if(!$this->connected) {die("Cannot Run Unprepared Query: Not Connected");}
-		return $this->conn->query($sql);
+		return $this->conn->query($sql)->fetchAll();
 		
 	}
 	
@@ -128,11 +128,13 @@ class DB {
 		return FALSE;
 	}
 
-	public function executePreparedQuery($name, $params){
+	public function executePreparedQuery($name, $params, $RETURN_RESULTS = TRUE){
 		if (array_key_exists($name, $this->prepared_quieres) && 
 			$this->connected){
 			$this->prepared_quieres[$name]->execute($params);
-			return $this->prepared_quieres[$name]->fetchAll();
+			if($RETURN_RESULTS){
+				return $this->prepared_quieres[$name]->fetchAll();
+			}
 		}
 	}
 	
@@ -345,12 +347,58 @@ class DB {
 	
 	public function getAllSeats(){
 		$sql = "SELECT row_no FROM Seat;";
-		return $this->unsafe_query($sql);
+		$raw = $this->unsafe_query($sql);
+		$results = array();
+		foreach($raw as $row => $info){
+			array_push($results, $info["row_no"]);
+		}
+		return $results;
 		
 	}
 	
 	public function getFilledSeats($perfid){
 		$sql = "SELECT row_no from Booking WHERE performance_id = :pid;";
 		return $this->query($sql, array(":pid" => $perfid));
+	}
+
+	public function seatBooked($pid, $row_no){
+		//check if it's already been prepared
+		$this_query_name = "#isSeatBooked";
+		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
+			$sql = "SELECT * FROM Booking b WHERE b.performance_id = :pid AND b.row_no = :rn";
+			//prepare
+			$this->makePreparedQuery($this_query_name, $sql);
+		}
+		//build the params		
+		$params = array(":pid" => $pid, ":rn" => $row_no);
+		//return the results
+		$results = $this->executePreparedQuery($this_query_name, $params);
+		if (sizeof($results) == 0){
+			return FALSE;
+		}
+		return TRUE;
+	}
+
+	public function bookSeats($pid, $seats, $name){
+		//check if it's already been prepared
+		$this_query_name = "#BookSeats";
+		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
+			$sql = "INSERT into Booking values (NULL, :rn, :pid,  :name);";
+			//prepare
+			$this->makePreparedQuery($this_query_name, $sql);
+		}
+		//
+		$all_fine = TRUE;
+		foreach ($seats as $i => $row_no) {
+				$params = array(":pid" => $pid, ":rn" => $row_no, ':name' => $name);
+				try {
+					$this->executePreparedQuery($this_query_name, $params, FALSE);
+				}
+				catch (Exception $ex){
+					echo $ex->getMessage();
+					$all_fine = FALSE;
+				}
+			}
+		return $all_fine;
 	}
 }?>
