@@ -168,3 +168,8 @@ h1 {
 .total {
 	font-weight: bold;
 }
+
+.error {
+	font-weight: bold;
+	color: red;
+}

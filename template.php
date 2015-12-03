@@ -306,7 +306,7 @@ class Template {
 			<input type=\"hidden\" name=\"pid\" value=$pid>
 			<b></b><br>";
 		if ($error_messages){
-			echo "<p>$error_messages</p>";
+			echo "<p class=\"error\">$error_messages</p>";
 		}
 		
 		$this->ticket_selection($pid, $DB, $seats);
