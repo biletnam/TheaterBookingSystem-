@@ -252,6 +252,10 @@ class Template {
 			$has_error = TRUE;
 			$error_messages.="Please provide an email address. ";
 		}
+		elseif (!filter_var($email, FILTER_VALID_EMAIL)){
+			$has_error = TRUE;
+			$error_messages .= "Please provide a valid email address. ";
+		}
 		foreach ($seats as $seat){
 			if ($DB->seatBooked(intval($performance['id']), $seat)){
 				$has_error = TRUE;
