@@ -24,7 +24,7 @@ $Template->pre_content();
 
 if (isset($_GET['pid'])){
 	//////////////////
-	//it was a get reqest, we should display the booking form
+	//it was a get reqest for a booking, we should display the booking form
 	//////////////////
 	$performance = $DB->getPerformance(intval($_GET['pid']));
 	$Template->display_booking_form($DB,$performance[0]);
@@ -47,11 +47,15 @@ elseif (isset($_POST['pid'])){
 	if (isset($_POST['customer_name'])){
 		$customer_name = $_POST['customer_name'];
 	}
-	$Template->process_booking_form($performance[0], $selected_seats, $customer_name, $DB);
+	$email = NULL;
+	if (isset($_POST['email'])){
+		$email = $_POST['email'];
+	}
+	$Template->process_booking_form($performance[0], $selected_seats, $customer_name, $email, $DB);
 }
 else {
 	//////////////////
-	//no performance selected, display performances.
+	//no performance selected, display all performances.
 	//////////////////
 	echo "
 	<div class=\"post highlighted\">

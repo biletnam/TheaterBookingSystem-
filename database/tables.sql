@@ -37,6 +37,7 @@
     	row_no char(3) not null, 
     	performance_id mediumint not null, 
     	customer_name varchar(300) not null, 
+        email varchar(60) not null,
     	primary key (ticket_no), 
     	foreign key (row_no) 
     		references Seat(row_no), 

@@ -240,13 +240,17 @@ class Template {
 	// BOOKING FORM TEMPLATES
 	////////////////////////////////
 
-	function process_booking_form($performance, $seats, $customer_name, $DB){
+	function process_booking_form($performance, $seats, $customer_name, $email, $DB){
 		//Takes in booking information. If this information is blank
 		$has_error = FALSE;
 		$error_messages = "";
 		if ($customer_name == NULL){
 			$has_error = TRUE;
 			$error_messages.="Please provide a name for the booking. ";
+		}
+		if ($email == NULL){
+			$has_error = TRUE;
+			$error_messages.="Please provide an email address. ";
 		}
 		foreach ($seats as $seat){
 			if ($DB->seatBooked(intval($performance['id']), $seat)){
@@ -256,13 +260,13 @@ class Template {
 		}
 				
 		if ($has_error || sizeof($seats)<1){
-			$this->display_booking_form($DB, $performance, $seats, $customer_name, $error_messages);
+			$this->display_booking_form($DB, $performance, $seats, $customer_name, $email, $error_messages);
 		}
 		else {
 			//here we actually book the seats
-			$success = $DB->bookSeats(intval($performance['id']), $seats, $customer_name);
+			$success = $DB->bookSeats(intval($performance['id']), $seats, $customer_name, $email);
 			if ($success){
-				$this->booking_success($DB, $customer_name);
+				$this->booking_success($DB, $customer_name, $email, $seats);
 			}
 			else{
 				$this->booking_fail($DB);
@@ -271,24 +275,28 @@ class Template {
 		
 	}
 	
-	function display_booking_form($DB, $performance, $seats = array(), $customer_name = '', $error_messages = array()) {
+	function display_booking_form($DB, $performance, $seats = array(), $customer_name = '', $email = '',  $error_messages = array()) {
 		//pre-process the data
 		$title = $performance['title'];
 		$date_time = $performance['date_time'];
 		$pid = $performance['id'];
+		$perf = $title. " ".date('l, F jS o',strtotime(str_replace('-','/', $date_time)));
 		
 		echo "<form action=\"book.php\" method=\"POST\">
-			Performance:<br>
+			<h1>Booking Form</h1>
+			<h2>Booking seats for: $perf</h2>
 			<input type=\"hidden\" name=\"pid\" value=$pid>
-			<b>$title on $date_time</b><br>";
+			<b></b><br>";
 		if ($error_messages){
 			echo "<p>$error_messages</p>";
 		}
 		
 		$this->ticket_selection($pid, $DB, $seats);
 		
-		echo "Your Name:<br>
+		echo "<h3>Your Name:</h3>
 			<input type=\"text\" name=\"customer_name\" value=\"$customer_name\">
+			<h3>Your Email:</h3>
+			<input type=\"text\" name=\"email\" value=\"$email\">
 			<br><br>
 			<input type=\"submit\" value=\"Book\">
 			</form>";			
@@ -302,42 +310,38 @@ class Template {
 		$avail = $DB->getTicketsAvailableByZone($pid);
 		$nos = range(1,20);
 		foreach ($avail as $zone => $zone_info) {
-			$zone = ucwords($zone);
+			$Zone = ucwords($zone);
 			$price = $zone_info["price"];
 			$description = $zone_info["description"];
-			echo "<h3>$zone - &pound;$price</h3>";
+			echo "<h3>$Zone - &pound;$price</h3>";
 			echo "<p>$description</p>";
 			echo "<table>";
 			ksort($zone_info["rows"]);
 			foreach ($zone_info["rows"] as $row => $seats){
 				echo "<tr><td class=\"row-identifier\">$row</td>";
 				foreach ($seats as $no => $seat_is_available) {
-					if ($seat_is_available){
-
-						$row_no = $row.str_pad($no, 2, "0", STR_PAD_LEFT);
-						$checked = "";
-						if (array_key_exists($row_no,$selected_seats)){$checked = " checked";}
-						echo "<td class=\"booking available\">";
-						echo "<input type=\"checkbox\" name=\"$row_no\" value=\"1\" $checked>";
+					$row_no = $row.str_pad($no, 2, "0", STR_PAD_LEFT);
+					if ($DB->seatExists($row_no, $zone)){
+						if ($seat_is_available){
+							$checked = "";
+							if (in_array($row_no,$selected_seats)){$checked = " checked";}
+							echo "<td class=\"booking available\">";
+							echo "<input type=\"checkbox\" name=\"$row_no\" value=\"1\" $checked>";
+						}
+						else {
+							echo "<td class=\"booking booked\">";
+							echo "X";
+						}
 						echo "</td>";
-						//echo $row_no."<br>$".$price;
 					}
-					else {
-						echo "<td class=\"booking booked\">";
-						echo "X";
-						echo "</td>";
-					}
-					
-					echo "</td>";
 				}
-				
 				echo "</tr>";
 			}
 			echo "</table>";
 		}
 	}
 
-	private function booking_success($DB, $name){
+	private function booking_success($DB, $name, $email, $seats){
 		echo "
 		<div class=\"post highlighted\">
 		<img src=\"images/logo.png\" height=\"100\" align=\"left\">
@@ -345,9 +349,10 @@ class Template {
 		<p>Your booking has been successful! Thanks you'll have a wonderful time we know we will ;)</p>
 		<p>Please book another show with us below</p>
 		</div>";
+		//TODO add seats into confirmation
 		$next_shows = $DB->getNextPerformances(50);
 		foreach ($next_shows as $show) {
-			$Template->display_performance($show, $DB);
+			$this->display_performance($show, $DB);
 		}
 	}
 

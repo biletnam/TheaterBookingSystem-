@@ -46,17 +46,21 @@ class DB {
 
 	private function dropDB() {
 		$this->conn->query("DROP DATABASE $this->dbname;");
+		echo "<br>dropped";
 	}
 
 	private function makeDB() {
 		$this->conn->query("CREATE DATABASE IF NOT EXISTS $this->dbname;");
+		echo "<br>makeDB";
 	}
 
 	private function selectDB() {
 		$this->conn->query("USE $this->dbname;");
+		echo "<br>selected";
 	}
 	
 	private function populateDB() {
+		echo "<br>populating";
 		$sql_files = array (
 		//ORDERING HERE MATTERS
 		//this is the order they will be executed in.
@@ -71,23 +75,30 @@ class DB {
 		
 		foreach ($sql_files as $file) {
 			$this->runSqlFile($file);
+			echo "<br>$file was run";
 		}
+
+		echo "<br>populated";
 	
 	}
 	
 	private function runSqlFile($filename) {
 		if (!$this->connected) {die("Cannot Run SQL File: Not Connected");}
 		$sql = file_get_contents($filename);
-		$this->unsafe_query($sql);
+		echo "$sql";
+		$this->unsafe_query($sql, FALSE);
 	}
 	
 	////////////////
 	//QUERY FUNCTIONS
 	////////////////
 	
-	private function unsafe_query($sql) {
+	private function unsafe_query($sql, $RETURN_RESULTS = TRUE) {
 		if(!$this->connected) {die("Cannot Run Unprepared Query: Not Connected");}
-		return $this->conn->query($sql)->fetchAll();
+		$results = $this->conn->query($sql);
+		if ($RETURN_RESULTS){
+			return $results->fetchAll();
+		}
 		
 	}
 	
@@ -347,7 +358,7 @@ class DB {
 	
 	public function getAllSeats(){
 		$sql = "SELECT row_no FROM Seat;";
-		$raw = $this->unsafe_query($sql);
+		$raw = $this->unsafe_query($sql, TRUE);
 		$results = array();
 		foreach($raw as $row => $info){
 			array_push($results, $info["row_no"]);
@@ -379,18 +390,18 @@ class DB {
 		return TRUE;
 	}
 
-	public function bookSeats($pid, $seats, $name){
+	public function bookSeats($pid, $seats, $name, $email){
 		//check if it's already been prepared
 		$this_query_name = "#BookSeats";
 		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
-			$sql = "INSERT into Booking values (NULL, :rn, :pid,  :name);";
+			$sql = "INSERT into Booking values (NULL, :rn, :pid,  :name, :e);";
 			//prepare
 			$this->makePreparedQuery($this_query_name, $sql);
 		}
 		//
 		$all_fine = TRUE;
 		foreach ($seats as $i => $row_no) {
-				$params = array(":pid" => $pid, ":rn" => $row_no, ':name' => $name);
+				$params = array(":pid" => $pid, ":rn" => $row_no, ':name' => $name, ':e' => $email);
 				try {
 					$this->executePreparedQuery($this_query_name, $params, FALSE);
 				}
@@ -400,5 +411,23 @@ class DB {
 				}
 			}
 		return $all_fine;
+	}
+
+	public function seatExists($row_no, $zone_name){
+		//check if it's already been prepared
+		$this_query_name = "#seatExists";
+		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
+			$sql = "SELECT * FROM Seat WHERE row_no = :r AND zone_name = :z";
+			//prepare
+			$this->makePreparedQuery($this_query_name, $sql);
+		}
+		//build the params		
+		$params = array(":r" => $row_no, ":z" => $zone_name);
+		//return the results
+		$results = $this->executePreparedQuery($this_query_name, $params);
+		if (sizeof($results) == 0){
+			return FALSE;
+		}
+		return TRUE;		
 	}
 }?>
