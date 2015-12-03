@@ -398,7 +398,7 @@ class DB {
 			$this->makePreparedQuery($this_query_name, $sql);
 		}
 		//
-		$cost = 0;
+		$all_fine = TRUE;
 		foreach ($seats as $i => $row_no) {
 				$params = array(":pid" => $pid, ":rn" => $row_no, ':name' => $name, ':e' => $email);
 				try {
@@ -409,7 +409,7 @@ class DB {
 					$all_fine = FALSE;
 				}
 			}
-		return $cost;
+		return $all_fine;
 	}
 
 	public function seatExists($row_no, $zone_name){
@@ -465,7 +465,6 @@ class DB {
 		$params = array(":p" => $pid, ":rn" => $rn);
 		//return the results
 		$results = $this->executePreparedQuery($this_query_name, $params);
-		var_dump($results);
 		return $results[0]['price'];
 	}
 }?>

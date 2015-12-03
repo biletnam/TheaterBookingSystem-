@@ -254,7 +254,7 @@ class Template {
 			$has_error = TRUE;
 			$error_messages.="Please provide an email address. ";
 		}
-		elseif (!filter_var($email, FILTER_VALID_EMAIL)){ //AND VALID
+		elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //AND VALID
 			$has_error = TRUE;
 			$error_messages .= "Please provide a valid email address. ";
 		}
@@ -378,10 +378,13 @@ class Template {
 	}
 
 	private function booking_success($DB, $name, $email, $seats, $cost){
+		$list_seats = implode(" ", $seats);
+		$cost = number_format($cost, 2, ".", ",");
 		echo "
 		<div class=\"post highlighted\">
 		<img src=\"images/logo.png\" height=\"100\" align=\"left\">
 		<h2>Thanks $name, Your booking has been made</h2>
+		<p>Your booked seats are: $list_seats. Please pay &pound;$cost</p>
 		<p>Your booking has been successful! Thanks you'll have a wonderful time we know we will ;)</p>
 		<p>Please book another show with us below</p>
 		</div>";
@@ -401,7 +404,7 @@ class Template {
 		</div>";
 		$next_shows = $DB->getNextPerformances(50);
 		foreach ($next_shows as $show) {
-			$Template->display_performance($show, $DB);
+			$this->display_performance($show, $DB);
 		}
 	}
 }//end class template
