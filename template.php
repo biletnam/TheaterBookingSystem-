@@ -263,7 +263,7 @@ class Template {
 		$cost = 0;
 		if (sizeof($seats)<1){ //MUST BOOK AT LEAST ONE SEAT
 			$has_error = TRUE;
-			$error_messages .= "Please choose at least one seat to book. "
+			$error_messages .= "Please choose at least one seat to book. ";
 		}
 		else { //EACH SEAT MUST BE BOOKABLE
 			foreach ($seats as $seat){
