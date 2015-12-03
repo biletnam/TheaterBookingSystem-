@@ -301,7 +301,21 @@ class Template {
 			<input type=\"text\" name=\"customer_name\" value=\"$customer_name\">
 			<h3>Your Email:</h3>
 			<input type=\"text\" name=\"email\" value=\"$email\">
-			<br><br>
+			<br>
+			<span id=\"total\">TOTAL: &pound;</span>
+			<script type=\"text/javascript\">
+				var total = 0;
+				updateTotal = function (row, val){
+					if (document.getElementById(row).checked){
+						total += val;
+					}
+					else {
+						total -= val;
+					}
+					document.getElementById(\"total\").innerHTML =\"TOTAL: &pound;\"+ total;
+				}
+			</script>
+			<br>
 			<input type=\"submit\" value=\"Book\">
 			</form>";			
 			
@@ -330,7 +344,11 @@ class Template {
 							$checked = "";
 							if (in_array($row_no,$selected_seats)){$checked = " checked";}
 							echo "<td class=\"booking available\">";
-							echo "<input type=\"checkbox\" name=\"$row_no\" value=\"1\" $checked>";
+							echo "<input type=\"checkbox\" 
+										 id =\"$row_no\" 
+										 name=\"$row_no\" 
+										 value=\"1\" $checked
+										 onclick=\"updateTotal('$row_no', $price)\">";
 						}
 						else {
 							echo "<td class=\"booking booked\">";
