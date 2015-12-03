@@ -121,18 +121,19 @@ class Template {
 		return substr($text,0, $cut_on)."...";
 	}
 
-	private function writeTicketsAvailable($num_tickets){
+	private function writeTicketsAvailable($num_tickets, $pid){
+		$booking_link = "<a href=\"book.php?pid=$pid\">Book Now!</a>";
 		if ($num_tickets == 0){
 			return "Sold Out!";
 		}
 		elseif ($num_tickets>50) {
-			return "Tickets are still available ($num_tickets).";
+			return "Tickets are still available ($num_tickets). $booking_link";
 		}
 		elseif ($num_tickets == 1) {
-			return "Only 1 ticket left.";
+			return "Only 1 ticket left. $booking_link";
 		}
 		else{
-			return "Only $num_tickets tickts left.";
+			return "Only $num_tickets tickets left. $booking_link";
 		}
 	}
 
@@ -177,10 +178,10 @@ class Template {
 			if ($next_performances){
 				foreach($next_performances as $show) {
 					$pid = $show['id'];
-					$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($pid)));
+					$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($pid)), $pid);
 					$date = date('l, F jS o',strtotime(str_replace('-','/', $show['date_time'])));
 					$link = "shows.php?show=".$show['id'];
-					echo "<li><a href=\"$link\">$date</a>, $num_tickets, <a href=\"book.php?pid=$pid\">Book Now!</a></li>";
+					echo "<li><a href=\"$link\">$date</a>, $num_tickets</li>";
 				}
 			
 			echo "</ul>";
@@ -206,28 +207,22 @@ class Template {
 
 		//process data
 		$heading = date('l, F jS o', strtotime($date_time))." ".$title;
-		$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($id)));
+		$num_tickets = $this->writeTicketsAvailable(sizeof($DB->getTicketsAvailable($id)), $id);
 		
 		if (!$LONG){
 			$desc = $this->shortenText($description);
-			
-			//TODO give this a query that works the way it ex[ects]
-			//render data
-
 
 			echo "<div class=\"post show\">
 				<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
 				<p>$desc</p>
 				<p>$num_tickets</p>
-				<p><a href=\"book.php?pid=$id\">Book Now!</a></p>
 				</div>";
 		}
 		else {
 			echo "<div class=\"post show\">
 				<h2><a href=\"shows.php?show=$id\">$heading</a></h2>
 				<p>$description</p>
-				<p>$num_tickets</p>
-				<p><a href=\"book.php?pid=$id\">Book Now!</a></p>";
+				<p>$num_tickets</p>";
 
 			$this->showGallery($title);
 			echo "</div>";
