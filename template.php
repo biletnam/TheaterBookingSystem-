@@ -244,37 +244,47 @@ class Template {
 		//Takes in booking information. If this information is blank
 		$has_error = FALSE;
 		$error_messages = "";
+		///MUST HAVE A NAME
 		if ($customer_name == NULL){
 			$has_error = TRUE;
 			$error_messages.="Please provide a name for the booking. ";
 		}
+		//MUST BE A AN EMAIL
 		if ($email == NULL){
 			$has_error = TRUE;
 			$error_messages.="Please provide an email address. ";
 		}
-		elseif (!filter_var($email, FILTER_VALID_EMAIL)){
+		elseif (!filter_var($email, FILTER_VALID_EMAIL)){ //AND VALID
 			$has_error = TRUE;
 			$error_messages .= "Please provide a valid email address. ";
 		}
+		//MUST HAVE VALID SEATS 
+		//lets also calculate a cost
 		$cost = 0;
-		foreach ($seats as $seat){
-			if ($DB->seatBooked(intval($performance['id']), $seat)){
-				$has_error = TRUE;
-				$error_messages .= "Error: Seat ($seat) Unavailable. ";
-			}
-			else {
-				$cost += $DB->getCostOfSeat($performance['id'], $seat);
+		if (sizeof($seats)<1){ //MUST BOOK AT LEAST ONE SEAT
+			$has_error = TRUE;
+			$error_messages .= "Please choose at least one seat to book. "
+		}
+		else { //EACH SEAT MUST BE BOOKABLE
+			foreach ($seats as $seat){
+				if ($DB->seatBooked(intval($performance['id']), $seat)){
+					$has_error = TRUE;
+					$error_messages .= "Error: Seat ($seat) Unavailable. ";
+				}
+				else {
+					$cost += $DB->getCostOfSeat($performance['id'], $seat);
+				}
 			}
 		}
-				
-		if ($has_error || sizeof($seats)<1){
+			
+		if ($has_error){
 			$this->display_booking_form($DB, $performance, $seats, $customer_name, $email, $error_messages, $cost);
 		}
 		else {
 			//here we actually book the seats
 			$success = $DB->bookSeats(intval($performance['id']), $seats, $customer_name, $email);
 			if ($success){
-				$this->booking_success($DB, $customer_name, $email, $seats);
+				$this->booking_success($DB, $customer_name, $email, $seats, $cost);
 			}
 			else{
 				$this->booking_fail($DB);
@@ -367,7 +377,7 @@ class Template {
 		}
 	}
 
-	private function booking_success($DB, $name, $email, $seats){
+	private function booking_success($DB, $name, $email, $seats, $cost){
 		echo "
 		<div class=\"post highlighted\">
 		<img src=\"images/logo.png\" height=\"100\" align=\"left\">
@@ -382,7 +392,7 @@ class Template {
 		}
 	}
 
-		private function booking_fail($DB){
+	private function booking_fail($DB){
 		echo "
 		<div class=\"post highlighted\">
 		<img src=\"images/logo.png\" height=\"100\" align=\"left\">
