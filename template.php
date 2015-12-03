@@ -256,15 +256,19 @@ class Template {
 			$has_error = TRUE;
 			$error_messages .= "Please provide a valid email address. ";
 		}
+		$cost = 0;
 		foreach ($seats as $seat){
 			if ($DB->seatBooked(intval($performance['id']), $seat)){
 				$has_error = TRUE;
 				$error_messages .= "Error: Seat ($seat) Unavailable. ";
 			}
+			else {
+				$cost += $DB->getCostOfSeat($performance['id'], $seat);
+			}
 		}
 				
 		if ($has_error || sizeof($seats)<1){
-			$this->display_booking_form($DB, $performance, $seats, $customer_name, $email, $error_messages);
+			$this->display_booking_form($DB, $performance, $seats, $customer_name, $email, $error_messages, $cost);
 		}
 		else {
 			//here we actually book the seats
@@ -279,7 +283,7 @@ class Template {
 		
 	}
 	
-	function display_booking_form($DB, $performance, $seats = array(), $customer_name = '', $email = '',  $error_messages = array()) {
+	function display_booking_form($DB, $performance, $seats = array(), $customer_name = '', $email = '',  $error_messages = array(), $cost = 0.00) {
 		//pre-process the data
 		$title = $performance['title'];
 		$date_time = $performance['date_time'];
@@ -302,9 +306,9 @@ class Template {
 			<h3>Your Email:</h3>
 			<input type=\"text\" name=\"email\" value=\"$email\">
 			<br>
-			<span id=\"total\">TOTAL: &pound;</span>
+			<span id=\"total\">TOTAL: &pound;$cost</span>
 			<script type=\"text/javascript\">
-				var total = 0;
+				var total = $cost;
 				updateTotal = function (row, val){
 					if (document.getElementById(row).checked){
 						total += val;

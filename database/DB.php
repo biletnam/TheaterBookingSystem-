@@ -21,7 +21,6 @@ class DB {
 		$this->close();
 	}
 	
-
 	public function close() {
 		$conn = null;
 	}
@@ -399,7 +398,7 @@ class DB {
 			$this->makePreparedQuery($this_query_name, $sql);
 		}
 		//
-		$all_fine = TRUE;
+		$cost = 0;
 		foreach ($seats as $i => $row_no) {
 				$params = array(":pid" => $pid, ":rn" => $row_no, ':name' => $name, ':e' => $email);
 				try {
@@ -410,7 +409,7 @@ class DB {
 					$all_fine = FALSE;
 				}
 			}
-		return $all_fine;
+		return $cost;
 	}
 
 	public function seatExists($row_no, $zone_name){
@@ -429,5 +428,44 @@ class DB {
 			return FALSE;
 		}
 		return TRUE;		
+	}
+	
+	public function getCostOfSeat($pid, $rn){
+		//check if it's already been prepared
+		$this_query_name = "#seatCost";
+		if (!array_key_exists($this_query_name, $this->prepared_quieres)) {
+			$sql = 
+			"SELECT
+				ROUND (
+				(
+				SELECT
+					P.base_price
+				FROM
+					Production P
+					JOIN 
+						Performance p ON P.title = p.title
+					WHERE
+						p.id = :p
+				)
+				*
+				(
+				SELECT
+					z.price_multiplier
+				FROM
+					Zone z
+					JOIN Seat s ON s.zone_name = z.name
+				WHERE
+					s.row_no = :rn					
+				)
+				, 2) as price";
+			//prepare
+			$this->makePreparedQuery($this_query_name, $sql);
+		}
+		//build the params		
+		$params = array(":p" => $pid, ":rn" => $rn);
+		//return the results
+		$results = $this->executePreparedQuery($this_query_name, $params);
+		var_dump($results);
+		return $results[0]['price'];
 	}
 }?>
