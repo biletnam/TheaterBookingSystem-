@@ -36,9 +36,10 @@ class Template {
 
 	private function open_body() {echo "<body>";}
 
+	private function open_wrapper() {echo "<div id=\"wrapper\">";}
+
 	private function heading() {
-		echo "<div id=\"wrapper\">
-				<div id=\"header\">
+		echo "<div id=\"header\">
 					<h1><a href=\"/\">Caspar's Theatre</a></h1>
 					<p>The beginning of something beautiful...</p>
 				</div>
@@ -87,9 +88,12 @@ class Template {
 				</div>";
 	}
 
+	private function close_wrapper() {echo "</div>";}
+
 	private function close_body() {echo "</body>";}
 
 	private function close_html() {echo "</html>";}
+
 
 	/////////////////
 	// BIG WRAPPERS
@@ -99,6 +103,7 @@ class Template {
 		$this->open_html();
 		$this->head();
 		$this->open_body();
+		$this->open_wrapper();
 		$this->heading();
 		$this->menu();
 		$this->open_content();
@@ -107,6 +112,7 @@ class Template {
 	public function post_content() {
 		$this->close_content();
 		$this->footer();
+		$this->close_wrapper();
 		$this->close_body();
 		$this->close_html();
 	}
@@ -143,7 +149,8 @@ class Template {
 
 	function showGallery($title){
 		foreach (range(1,4) as $i){
-			echo "<image src=\"images/$title/$i.jpg\" class=\"gallery\" width=\"450px\" alt=\"Look at some wonderful photos of $title\">";
+			$url_title = str_replace(" ", "%20", $title);
+			echo "<img src=\"images/$url_title/$i.jpg\" class=\"gallery\" width=\"450\" alt=\"Look at some wonderful photos of $title\">";
 		}
 	}
 
@@ -157,8 +164,8 @@ class Template {
 		$mins = $production['mins'];
 		$genre = $production['genre'];
 
-		$cover_image_src = "images/$title/cover.jpg";
-		$coverimage = "<img src=\"$cover_image_src\" height=\"300\" align=\"right\">";
+		$cover_image_src = str_replace(" ", "%20", "images/$title/cover.jpg");
+		$coverimage = "<img src=\"$cover_image_src\" height=\"300\" class=\"right\" alt=\"$title\">";
 
 		echo "<div class=\"post production\">
 			$coverimage
@@ -377,7 +384,7 @@ class Template {
 		$cost = number_format($cost, 2, ".", ",");
 		echo "
 		<div class=\"post highlighted\">
-		<img src=\"images/logo.png\" height=\"100\" align=\"left\">
+		<img src=\"images/logo.png\" height=\"100\" class=\"left\">
 		<h2>Thanks $name, Your booking has been made</h2>
 		<p>Your booked seats are: $list_seats. Please pay &pound;$cost</p>
 		<p>Your booking has been successful! Thanks you'll have a wonderful time we know we will ;)</p>
@@ -393,7 +400,7 @@ class Template {
 	private function booking_fail($DB){
 		echo "
 		<div class=\"post highlighted\">
-		<img src=\"images/logo.png\" height=\"100\" align=\"left\">
+		<img src=\"images/logo.png\" height=\"100\" class=\"left\">
 		<h2>BOOO!! your booking was not successful</h2>
 		<p>We're sorry, please contact us by telephone to figure this out with us.</p>
 		</div>";

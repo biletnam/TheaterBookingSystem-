@@ -59,7 +59,7 @@ else {
 	//////////////////
 	echo "
 	<div class=\"post highlighted\">
-	<img src=\"images/logo.png\" height=\"100\" align=\"left\">
+	<img src=\"images/logo.png\" height=\"100\" class=\"left\" alt=\"logo\">
 	<h2>Bookings</h2>
 	<p>To make a booking please choose one of the shows below, and click Book Now!</p>
 	</div>";
