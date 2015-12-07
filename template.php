@@ -286,7 +286,7 @@ class Template {
 			//here we actually book the seats
 			$success = $DB->bookSeats(intval($performance['id']), $seats, $customer_name, $email);
 			if ($success){
-				$this->booking_success($DB, $customer_name, $email, $seats, $cost);
+				$this->booking_success($DB, $customer_name, $email, $seats, $cost, $performance);
 			}
 			else{
 				$this->booking_fail($DB);
@@ -379,13 +379,16 @@ class Template {
 		}
 	}
 
-	private function booking_success($DB, $name, $email, $seats, $cost){
+	private function booking_success($DB, $name, $email, $seats, $cost, $performance){
+		$title = $performance['title'];
+		$date_time = $performance['date_time'];
 		$list_seats = implode(" ", $seats);
 		$cost = number_format($cost, 2, ".", ",");
+		$when = date('l jS \of F Y \a\t h:i A',strtotime(str_replace('-','/', $date_time)));
 		echo "
 		<div class=\"post highlighted\">
 		<img src=\"images/logo.png\" height=\"100\" class=\"left\">
-		<h2>Thanks $name, Your booking has been made</h2>
+		<h2>Thanks $name, Your booking has been made for $title on $when</h2>
 		<p>Your booked seats are: $list_seats. Please pay &pound;$cost</p>
 		<p>Your booking has been successful! Thanks you'll have a wonderful time we know we will ;)</p>
 		<p>Please book another show with us below</p>
